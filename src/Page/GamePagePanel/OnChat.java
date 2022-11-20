@@ -15,7 +15,7 @@ public class OnChat extends JPanel {
         Color border = new Color(154, 254, 132);
         setLayout(new BorderLayout());
         setBackground(background);
-        setBounds(30, 600, 270, 30);
+        setBounds(30, 630, 270, 30);
         setBorder(new CustomLineBorder(border, 1,
                 CustomLineBorder.RIGHT | CustomLineBorder.TOP | CustomLineBorder.LEFT | CustomLineBorder.BOTTOM));
         input.setText("");

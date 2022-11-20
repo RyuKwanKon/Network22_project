@@ -13,6 +13,7 @@ import java.io.File;
 
 import static Event.MainTimer.randNumber;
 import static Event.MainTimer.randTitle;
+import static GameData.UserData.*;
 
 public class Bid extends JLabel {
     public Bid(){
@@ -28,8 +29,8 @@ public class Bid extends JLabel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                Alarm.startPrice += 5;
-                GamePageView.alarm.setText("상품" + Data.cardInfo[randTitle - 65] + Data.cardInfoNumber.get(randNumber) + " - 금액: " + Alarm.startPrice + "원");
+                GameBidCoin += 5;
+                GamePageView.alarm.setText("상품" + Data.cardInfo[randTitle - 65] + Data.cardInfoNumber.get(randNumber) + " - 금액: " + GameBidCoin + "원");
             }
         });
     }
