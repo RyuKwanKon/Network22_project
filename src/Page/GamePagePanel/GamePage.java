@@ -15,6 +15,7 @@ public class GamePage extends JPanel {
             setBounds(0, 0, 1280, 720);
             setBackground(background);
             setOpaque(false);
+//            setBackground();
     }
     public void paint(Graphics g){
         try{
