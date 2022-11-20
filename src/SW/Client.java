@@ -24,10 +24,11 @@ public class Client {
         Scanner scanner = new Scanner(System.in);
 
         try{
-            a z = new a(socket);
-            z.start();
-            System.out.println("[Enter Nickname]");
-            String name = scanner.nextLine();
+            //클라이언트 서버 연결
+            a connectClient = new a(socket);
+            connectClient.start();
+//            System.out.println("[Enter Nickname]");
+//            String name = scanner.nextLine();
 
             socket = new Socket("127.0.0.1", 1111);
             System.out.println("[Connected to the Server]");
@@ -36,7 +37,6 @@ public class Client {
 
             inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-
             while(inFromServer != null){
                 String chat = inFromServer.readLine();
                 if(("[" + name + "] has left the game").equals(chat))
@@ -44,6 +44,7 @@ public class Client {
                 System.out.println("From:" + chat);
 
                 if("모든 유저가 접속했습니다".equals(chat)){
+
                 }
 
             }
