@@ -14,17 +14,19 @@ import Component.*;
 
 import static Event.MainTimer.randNumber;
 import static Event.MainTimer.randTitle;
+import static Page.GamePagePanel.Alarm.startPrice;
 import static Page.GamePagePanel.OnChat.input;
 import static Page.GamePagePanel.ScrollChatting.vertical;
 
 public class GamePageView extends JPanel {
     public static JLabel[] card = new JLabel[52];
     private Timer mainTimer = new Timer(3000, new MainTimer());
-    public static JLabel alarm = new Alarm();
     public static JLabel CenterCard = new CardView(590, 150, 141, 200, (char) randTitle + String.valueOf(randNumber));
     public static JPanel currentChatting = new Chat();
     public static JPanel onChat = new OnChat();
+    public static JLabel alarm = new Alarm();
     public static boolean on = false;
+    public static JPanel connectUser = new ConnectUserPanel();
     public static JScrollPane Chatting = new ScrollChatting();
     public GamePageView(){
         mainTimer.start();
@@ -50,6 +52,8 @@ public class GamePageView extends JPanel {
             card[i] = new CardView(800 + (i%13)*35, h[i / 13], 35, 50, title[i / 13] + String.valueOf((i%13)+1));
             add(card[i]);
         }
+
+        add(connectUser);
 
         add(new GamePage());
 

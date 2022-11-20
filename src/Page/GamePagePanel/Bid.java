@@ -29,7 +29,7 @@ public class Bid extends JLabel {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 Alarm.startPrice += 5;
-                GamePageView.alarm.setText("상품" + Data.cardInfo[randTitle - 65] + Data.cardInfoNumber.get(randNumber) + " - 금액: " + Alarm.startPrice);
+                GamePageView.alarm.setText("상품" + Data.cardInfo[randTitle - 65] + Data.cardInfoNumber.get(randNumber) + " - 금액: " + Alarm.startPrice + "원");
             }
         });
     }

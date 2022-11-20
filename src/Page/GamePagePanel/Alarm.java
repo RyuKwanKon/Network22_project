@@ -16,9 +16,9 @@ public class Alarm extends JLabel {
         Color background = new Color(28, 35, 42);
         Color fontColor = new Color(115, 255, 138);
         setLayout(null);
-        setBounds(530, 50, 700, 50);
+        setBounds(530, 50, 800, 50);
         setBackground(background);
-        setText("상품" + Data.cardInfo[randTitle - 65] + Data.cardInfoNumber.get(randNumber) + " - 금액: " + startPrice);
+        setText("상품" + Data.cardInfo[randTitle - 65] + Data.cardInfoNumber.get(randNumber) + "금액: " + String.valueOf(startPrice));
         setFont(font);
         setForeground(fontColor);
     }
