@@ -1,3 +1,7 @@
+package SW;
+
+import Lee.Login;
+import Frame.Frame;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,11 +21,11 @@ public class Client {
 
         Socket socket = null;
         BufferedReader inFromServer = null;
-
-
         Scanner scanner = new Scanner(System.in);
 
         try{
+            a z = new a(socket);
+            z.start();
             System.out.println("[Enter Nickname]");
             String name = scanner.nextLine();
 
@@ -40,8 +44,6 @@ public class Client {
                 System.out.println("From:" + chat);
 
                 if("모든 유저가 접속했습니다".equals(chat)){
-                    a z = new a(socket, name);
-                    z.start();
                 }
 
             }
@@ -63,7 +65,7 @@ class ClientThread extends Thread{
     int a = 0;
     Socket chatSocket = null;
     String name;
-
+    public PrintStream outToClient = null;
     Scanner scanner = new Scanner(System.in);
     public ClientThread(Socket chatSocket, String name){
         this.chatSocket = chatSocket;
@@ -72,10 +74,11 @@ class ClientThread extends Thread{
 
     public void run(){
         try{
-            PrintStream outToClient = new PrintStream(chatSocket.getOutputStream());
+            outToClient = new PrintStream(chatSocket.getOutputStream());
             outToClient.println(name);
             outToClient.flush();
-
+            RequestServer requestServer = null;
+            requestServer = new RequestServer(outToClient);
             while(true){
                 String chat = scanner.nextLine();
                 outToClient.println("chat : " + chat);
@@ -85,21 +88,26 @@ class ClientThread extends Thread{
             e.printStackTrace();
         }
     }
+
 }
 
 class a extends Thread{
     int a = 0;
     Socket socket = null;
-    String name;
-
     //Scanner scanner = new Scanner(System.in);
-    public a(Socket socket, String name){
+    public a(Socket socket){
         this.socket = socket;
-        this.name = name;
     }
 
     public synchronized void run(){
+        JFrame main = new Frame();
+        main.setVisible(true);
+
+
+        // }
+        /*
         try{
+
             wait(300);
             PrintStream outToClient = new PrintStream(socket.getOutputStream());
             outToClient.println("data : 게임 서버 접속");
@@ -125,6 +133,8 @@ class a extends Thread{
         } catch (IOException | InterruptedException e){
             e.printStackTrace();
         }
+
+         */
     }
 }
 

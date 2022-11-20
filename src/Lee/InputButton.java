@@ -7,6 +7,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import Frame.Frame.*;
+import SW.*;
 
 import static Frame.Frame.LoginPage;
 import static Frame.Frame.gamePage;
@@ -24,6 +25,10 @@ public class InputButton extends JButton{
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String userName = Login.loginInput.getText();
+                Func1 t = new Func1();
+                t.nicknameToServer(userName);
+
                 LoginPage.setVisible(false);
                 gamePage.setVisible(true);
             }
