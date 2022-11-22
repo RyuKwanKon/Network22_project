@@ -125,6 +125,7 @@ class ServerThread extends Thread {
             //client의 요청을 기다림
             while (inFromClient != null) {
                 requestMessage = inFromClient.readLine();
+                System.out.println(requestMessage);
                 String[] splitMessage = requestMessage.split("/");
                 requestUserName = splitMessage[1];
                 // userConnection/류관곤/현재 금액/입찰 금액/
@@ -143,8 +144,7 @@ class ServerThread extends Thread {
                         userConnectionList.put(outToClient, splitMessage[1]);
                         //User의 정보를 받아서
                         //4명이 요청이 올때까지 기다려.
-                        while (count != 4) {
-                        }
+                        while (count != 4) {}
                         //4명이 접속했다는 요청을 클라이언트에게 보내
                         ChatThread chatThread = new ChatThread(userConnectionList);
                         chatThread.start();

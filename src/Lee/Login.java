@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+import static Frame.Frame.gamePage;
+
 public class Login extends JPanel {
     public static JTextField loginInput = new InputUser();
     public static JButton loginButton = new InputButton();
@@ -21,7 +23,7 @@ public class Login extends JPanel {
         add(loginButton);
         add(new GamePage());
     }
-    class MainPicture extends JLabel{
+    /*class MainPicture extends JLabel{
         MainPicture(){
             try{
                 setOpaque(false);
@@ -35,5 +37,5 @@ public class Login extends JPanel {
                 System.out.println(e);
             }
         }
-    }
+    }*/
 }

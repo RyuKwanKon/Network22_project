@@ -9,17 +9,16 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import ClientThread.ClientConnect;
 import Component.*;
 import Page.GamePagePanel.GamePage;
 import Page.GamePageView;
 import Lee.*;
 
 public class Frame extends JFrame {
+    public static ClientConnect client;
     private String ip;
     private String id;
-    private Socket socket;
-    private BufferedReader inMsg;
-    public static PrintWriter outMsg;
     public static JPanel gamePage = new GamePageView();
     public static JPanel LoginPage = new Login();
     public Frame() {
@@ -30,23 +29,12 @@ public class Frame extends JFrame {
         Container contentPane = getContentPane();
         contentPane.setBackground(background);
         contentPane.setLayout(null);
-
+        contentPane.add(LoginPage);
         contentPane.add(gamePage);
         gamePage.setVisible(false);
-        contentPane.add(LoginPage);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        connectServer();
-    }
-
-    public void connectServer(){
-        try{
-            socket = new Socket("127.0.0.1", 1111);
-            System.out.println("[Client]Server 연결 성공!!");
-            inMsg = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            outMsg = new PrintWriter(socket.getOutputStream(), true);
-        }catch (Exception e){
-
-        }
+        client = new ClientConnect();
+        client.connectServer();
     }
 
     public static void main(String[] args) {

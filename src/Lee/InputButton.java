@@ -1,5 +1,7 @@
 package Lee;
 
+import ClientThread.ChatThread;
+import ClientThread.ClientConnect;
 import Component.*;
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +12,8 @@ import Frame.Frame.*;
 import SW.*;
 
 import static Frame.Frame.*;
+import static Page.GamePagePanel.OnChat.input;
+import static Page.GamePageView.currentChatting;
 
 public class InputButton extends JButton{
     public InputButton(){
@@ -25,9 +29,10 @@ public class InputButton extends JButton{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String userName = Login.loginInput.getText();
-                outMsg.println("userConnection/" + userName);
+                client.getOutMsg().println("userConnection/" + userName);
                 LoginPage.setVisible(false);
                 gamePage.setVisible(true);
+                gamePage.requestFocus();
             }
         });
     }

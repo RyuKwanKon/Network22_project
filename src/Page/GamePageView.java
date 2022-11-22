@@ -1,5 +1,6 @@
 package Page;
 
+import ClientThread.ChatThread;
 import Event.*;
 
 import Page.GamePagePanel.*;
@@ -14,6 +15,7 @@ import Component.*;
 
 import static Event.MainTimer.randNumber;
 import static Event.MainTimer.randTitle;
+import static Frame.Frame.client;
 import static Page.GamePagePanel.OnChat.input;
 import static Page.GamePagePanel.ScrollChatting.vertical;
 
@@ -30,8 +32,6 @@ public class GamePageView extends JPanel {
     public static JLabel coin = new CurrentCoin();
     private Timer mainTimer = new Timer(5000, new MainTimer());
     public GamePageView(){
-        setFocusable(true);
-        requestFocus();
         Color background = new Color(255, 255, 255);
         setLayout(null);
         setBorder(null);
@@ -67,10 +67,12 @@ public class GamePageView extends JPanel {
         add(connectUser);
 
         add(new GamePage());
-
+        requestFocus();
+        setFocusable(true);
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+                System.out.println(e.getKeyChar());
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     if(!on){
                         vertical.setValue(vertical.getMaximum());

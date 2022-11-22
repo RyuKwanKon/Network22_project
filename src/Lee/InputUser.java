@@ -16,8 +16,6 @@ public class InputUser extends JTextField {
         setForeground(new Color(255, 255, 255));
         setBackground(new Color(18, 23, 28));
         setOpaque(false);
-        setFocusable(false);
-        setFocusable(true);
         setText("UserName");
         setBorder(new CustomLineBorder(border, 3,
                 CustomLineBorder.RIGHT | CustomLineBorder.TOP | CustomLineBorder.LEFT | CustomLineBorder.BOTTOM));
