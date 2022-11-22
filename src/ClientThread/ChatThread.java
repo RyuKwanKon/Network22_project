@@ -1,5 +1,6 @@
 package ClientThread;
 
+import Lee.Login;
 import Page.GamePagePanel.OnChat;
 import Page.GamePagePanel.UserChat;
 import Page.GamePagePanel.UserCurrentText;
@@ -27,9 +28,10 @@ public class ChatThread extends Thread {
     @Override
     public void run() {
         try {
-            System.out.println(input.getText());
+            String userName = Login.loginInput.getText();
+            System.out.println("send: " + userName + "/" + input.getText());
             PrintWriter outMsg = new PrintWriter(socket.getOutputStream(), true);
-            outMsg.println();
+            outMsg.println("chatting" + "/" + userName + "/" +input.getText());
         } catch (Exception e) {
         }
     }

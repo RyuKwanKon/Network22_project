@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import static SW.Server.count;
+
 class Ex {
     public BufferedReader inFromClient = null;
     public PrintWriter outToClient = null;
@@ -26,7 +28,7 @@ class Ex {
 
 public class Server {
     public static boolean canConnection = true;
-
+    public static int count = 0;
     public static void main(String[] args) {
         Server server = new Server();
         server.start();
@@ -96,7 +98,6 @@ public class Server {
 //                    }
 
 class ServerThread extends Thread {
-    int count = 0;
     int userNum = 0;
     //static HashMap<PrintWriter, Integer> userConnectionInfo = new HashMap<PrintWriter, Integer>(4);
     //static ArrayList<String> userNameList = new ArrayList<String>(4);
@@ -144,10 +145,12 @@ class ServerThread extends Thread {
                         userConnectionList.put(outToClient, splitMessage[1]);
                         //User의 정보를 받아서
                         //4명이 요청이 올때까지 기다려.
+                        System.out.println(count);
                         while (count != 4) {}
                         //4명이 접속했다는 요청을 클라이언트에게 보내
-                        ChatThread chatThread = new ChatThread(userConnectionList);
-                        chatThread.start();
+//                        ChatThread chatThread = new ChatThread(userConnectionList);
+//                        chatThread.start();
+                        break;
                     }
                     case "successBid": {
                         //[Server -> Client] Thread도 있어야 할 것 같은데 모르겠다
