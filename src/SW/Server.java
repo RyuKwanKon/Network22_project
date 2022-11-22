@@ -10,8 +10,8 @@ class Ex {
     public int currentRound = 0;
     public String currentCard = null;
 
-    public void sendAll(HashMap<PrintWriter, String> userConnectionList, String msg){
-        for(PrintWriter out : userConnectionList.keySet()){
+    public void sendAll(HashMap<PrintWriter, String> userConnectionList, String msg) {
+        for (PrintWriter out : userConnectionList.keySet()) {
             out.println(msg);
             out.flush();
         }
@@ -114,15 +114,8 @@ class ServerThread extends Thread {
             System.out.println("연결 오류");
             e.printStackTrace();
         }
-//        try {
-//            outToClient = new PrintWriter(socket.getOutputStream());
-//            inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//            userConnectionInfo.put(outToClient, userNum);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
+
     @Override
     public synchronized void run() {
         String requestUserName = "";
@@ -142,22 +135,24 @@ class ServerThread extends Thread {
                     return;
                 }
                 //chatThread 만들어.
-                if (!splitMessage[0].equals("end")) {
-                    switch (splitMessage[0]) {
-                        case "userConnection": {    //userConnection/UserName;
-                            count++;
-                            userConnectionList.put(outToClient, splitMessage[1]);
-                            //User의 정보를 받아서
-                            //4명이 요청이 올때까지 기다려.
-                            while (count != 4) {}
-                            //4명이 접속했다는 요청을 클라이언트에게 보내
-                            ChatThread chatThread = new ChatThread(userConnectionList);
-                            chatThread.start();
+                if (splitMessage[0].equals("end")) return;
+                switch (splitMessage[0]) {
+                    case "userConnection": {    //userConnection/UserName;
+                        System.out.println(splitMessage[1]);
+                        count++;
+                        userConnectionList.put(outToClient, splitMessage[1]);
+                        //User의 정보를 받아서
+                        //4명이 요청이 올때까지 기다려.
+                        while (count != 4) {
                         }
-                        case "successBid": {
-                            //[Server -> Client] Thread도 있어야 할 것 같은데 모르겠다
-                            //낙찰/유저이름/트럼프카드/금액
-                            //낙찰된 유저의 출력 스트림 & 이름 저장
+                        //4명이 접속했다는 요청을 클라이언트에게 보내
+                        ChatThread chatThread = new ChatThread(userConnectionList);
+                        chatThread.start();
+                    }
+                    case "successBid": {
+                        //[Server -> Client] Thread도 있어야 할 것 같은데 모르겠다
+                        //낙찰/유저이름/트럼프카드/금액
+                        //낙찰된 유저의 출력 스트림 & 이름 저장
 
 //                            PrintWriter dataToClient = null;
 //                            for(Map.Entry<PrintWriter, String> entry: userConnectionList.entrySet()){
@@ -165,64 +160,65 @@ class ServerThread extends Thread {
 //                                    dataToClient = entry.getKey();
 //                                }
 //                            }
-                            // 낙찰된 유저에게 낙찰 메시지 전송
+                        // 낙찰된 유저에게 낙찰 메시지 전송
 //                            dataToClient.println("낙찰");
 //                            dataToClient.flush();
-                            outToClient.println("낙찰");
-                            outToClient.flush();
-                            // 모든 유저들에게 낙찰 공지
-                            ChatThread chatThread = new ChatThread(userConnectionList, "익명의 참가자가" + splitMessage[3] +
-                                    "원으로" + splitMessage[2] + "를 낙찰받았습니다!");
-                            chatThread.start();
-                        }
-                        case "noBid": {
-                            //아무도 입찰 안함
-                            ChatThread chatThread = new ChatThread(userConnectionList, "아무도 응찰하지 않아" + splitMessage[2] + "는 유찰되었습니다!");
-                            chatThread.start();
-                        }
-                        case "chat":{
-                            // 채팅 쓰레드 - ChatThread
-                            // chat/msg
-                            ChatThread chatThread = new ChatThread(userConnectionList, splitMessage[1]);
-                            chatThread.start();
-                        }
-                        case "win":{
-                            // 조합 완성시에
-                            // win/유저이름
+                        outToClient.println("낙찰");
+                        outToClient.flush();
+                        // 모든 유저들에게 낙찰 공지
+                        ChatThread chatThread = new ChatThread(userConnectionList, "익명의 참가자가" + splitMessage[3] +
+                                "원으로" + splitMessage[2] + "를 낙찰받았습니다!");
+                        chatThread.start();
+                    }
+                    case "noBid": {
+                        //아무도 입찰 안함
+                        ChatThread chatThread = new ChatThread(userConnectionList, "아무도 응찰하지 않아" + splitMessage[2] + "는 유찰되었습니다!");
+                        chatThread.start();
+                    }
+                    case "chat": {
+                        // 채팅 쓰레드 - ChatThread
+                        // chat/msg
+                        ChatThread chatThread = new ChatThread(userConnectionList, splitMessage[1]);
+                        chatThread.start();
+                    }
+                    case "win": {
+                        // 조합 완성시에
+                        // win/유저이름
 //                            PrintWriter dataToClient = null;
 //                            for(Map.Entry<PrintWriter, String> entry: userConnectionList.entrySet()){
 //                                if(entry.getValue().equals(splitMessage[1])){
 //                                    dataToClient = entry.getKey();
 //                                }
 //                            }
-                            outToClient.println("승리");
-                            outToClient.flush();
+                        outToClient.println("승리");
+                        outToClient.flush();
 //                            dataToClient.println("승리");
 //                            dataToClient.flush();
 
-                            ChatThread chatThread = new ChatThread(userConnectionList, "참가자" + splitMessage[1] + "" +
-                                    "이(가) 가장 먼저 조합을 완성해 우승하였습니다!");
-                            chatThread.start();
-                        }
-                        default:
-                            break;
+                        ChatThread chatThread = new ChatThread(userConnectionList, "참가자" + splitMessage[1] + "" +
+                                "이(가) 가장 먼저 조합을 완성해 우승하였습니다!");
+                        chatThread.start();
                     }
-                } else return;
+                    default:
+                        break;
+                }
             }
+//            } catch(IOException e){
+//                //e.printStackTrace();
+//                System.out.println("[" + requestMessage + "] is disconnected");
+//            } finally{
+//                sendAll("[" + requestUserName + "] has left the game");
+//                userConnectionList.remove(outToClient);
+//                try {
+//                    socket.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+            System.out.println("[" + requestUserName + " terminate connection]");
         } catch (IOException e) {
-            //e.printStackTrace();
-            System.out.println("[" + requestMessage + "] is disconnected");
-        } finally {
-            sendAll("[" + requestUserName + "] has left the game");
-            userConnectionList.remove(outToClient);
-            try {
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            throw new RuntimeException(e);
         }
-        System.out.println("[" + requestUserName + " terminate connection]");
-    }
 //            userInfo.put(requestMessage, userNum);
 //            System.out.println("[Server] Create new connection");
 //            sendAll("[" + name + "] has entered the room");
@@ -234,7 +230,7 @@ class ServerThread extends Thread {
             }
 
              */
-            //sendAll("모든 유저가 접속했습니다");
+        //sendAll("모든 유저가 접속했습니다");
 
 //            while (inFromClient != null) {
 //
@@ -253,48 +249,44 @@ class ServerThread extends Thread {
 //                }
 //
 //            }
-            //sendAll(name + " : " + chatting + "");
+        //sendAll(name + " : " + chatting + "");
 
 
-    private void sendAll(String s) {
-        for (PrintWriter out : userConnectionList.keySet()) {
-            out.println(s);
-            out.flush();
+//        private void sendAll (String s){
+//            for (PrintWriter out : userConnectionList.keySet()) {
+//                out.println(s);
+//                out.flush();
+//            }
+//        }
+    }
+
+    class ChatThread extends Thread {
+        HashMap<PrintWriter, String> userConnectionList = new HashMap<PrintWriter, String>(4);
+        String msg = "";
+
+        public ChatThread(HashMap userConnectionList) {
+            this.userConnectionList = userConnectionList;
+            msg += "Player is : ";
+            for (Object out : userConnectionList.values()) {
+                msg += out;
+            }
+        }
+
+        public ChatThread(HashMap userConnectionList, String msg) {
+            this.userConnectionList = userConnectionList;
+            this.msg.concat(msg);
+        }
+
+        public void run() {
+
+            sendAll(userConnectionList, msg);
+        }
+
+        public void sendAll(HashMap<PrintWriter, String> userConnectionList, String msg) {
+            for (PrintWriter out : userConnectionList.keySet()) {
+                out.println(msg);
+                out.flush();
+            }
         }
     }
 }
-
-class ChatThread extends Thread{
-    HashMap<PrintWriter, String> userConnectionList = new HashMap<PrintWriter, String>(4);
-    String msg = "";
-    public ChatThread(HashMap userConnectionList){
-        this.userConnectionList = userConnectionList;
-        msg += "Player is : ";
-        for(Object out : userConnectionList.values()){
-            msg += out;
-        }
-    }
-
-    public ChatThread(HashMap userConnectionList, String msg){
-        this.userConnectionList = userConnectionList;
-        this.msg.concat(msg);
-    }
-    public void run(){
-
-        sendAll(userConnectionList, msg);
-    }
-    public void sendAll(HashMap<PrintWriter, String> userConnectionList, String msg){
-        for(PrintWriter out : userConnectionList.keySet()){
-            out.println(msg);
-            out.flush();
-        }
-    }
-}
-
-//class GameThread extends Thread {
-//    Socket socket = null;
-//
-//    public GameThread(Socket socket) {
-//
-//    }
-//}

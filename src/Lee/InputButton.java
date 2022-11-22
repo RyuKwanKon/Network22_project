@@ -9,8 +9,7 @@ import java.awt.event.ActionListener;
 import Frame.Frame.*;
 import SW.*;
 
-import static Frame.Frame.LoginPage;
-import static Frame.Frame.gamePage;
+import static Frame.Frame.*;
 
 public class InputButton extends JButton{
     public InputButton(){
@@ -26,9 +25,7 @@ public class InputButton extends JButton{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String userName = Login.loginInput.getText();
-                Func1 t = new Func1();
-                t.nicknameToServer(userName);
-
+                outMsg.println("userConnection/" + userName);
                 LoginPage.setVisible(false);
                 gamePage.setVisible(true);
             }
