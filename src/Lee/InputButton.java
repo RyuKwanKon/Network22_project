@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+
 import Frame.Frame.*;
 import SW.*;
 
@@ -28,11 +30,24 @@ public class InputButton extends JButton{
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String userName = Login.loginInput.getText();
-                client.getOutMsg().println("userConnection/" + userName);
-                LoginPage.setVisible(false);
-                gamePage.setVisible(true);
-                gamePage.requestFocus();
+                try {
+                    String userName = Login.loginInput.getText();
+                    client.getOutMsg().println("userConnection/" + userName);
+                    //대기화면
+                    String response = client.getInMsg().readLine();
+                    String[] splitMessage = response.split("/");
+                    System.out.println(response);
+                    if(splitMessage[0].equals("200")){
+//                        if(splitMessage[1].equals("waitClient")){}
+//                        else if(splitMessage[1].equals("gameStart")){
+                            LoginPage.setVisible(false);
+                            gamePage.setVisible(true);
+                            gamePage.requestFocus();
+//                        }
+                    }
+                } catch (Exception ex) {
+//                    throw new RuntimeException(ex);
+                }
             }
         });
     }

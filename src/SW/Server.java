@@ -127,26 +127,34 @@ class ServerThread extends Thread {
             while (inFromClient != null) {
                 requestMessage = inFromClient.readLine();
                 System.out.println(requestMessage);
+                if (count == 5) {
+                    System.out.println("접속 불가");
+                    return;
+                }
                 String[] splitMessage = requestMessage.split("/");
                 requestUserName = splitMessage[1];
                 // userConnection/류관곤/현재 금액/입찰 금액/
                 //요청을 쪼개주세요.
                 //switch case로 요청에 해당하는 처리를 만들어.
-                if (count == 4) {
-                    System.out.println("접속 불가");
-                    return;
-                }
                 //chatThread 만들어.
                 if (splitMessage[0].equals("end")) return;
                 switch (splitMessage[0]) {
                     case "userConnection": {    //userConnection/UserName;
                         System.out.println(splitMessage[1]);
                         count++;
-                        userConnectionList.put(outToClient, splitMessage[1]);
+                        //userConnectionList.put(outToClient, splitMessage[1]);
                         //User의 정보를 받아서
                         //4명이 요청이 올때까지 기다려.
                         System.out.println(count);
-                        while (count != 4) {}
+                        try{
+                            if(count != 4) wait();
+                            else if(count == 4){
+                                notifyAll();
+                            }
+                        }catch (Exception error){}
+                        outToClient.println("200/gameStart");
+                        outToClient.flush();
+                        System.out.println(count + "game start");
                         //4명이 접속했다는 요청을 클라이언트에게 보내
 //                        ChatThread chatThread = new ChatThread(userConnectionList);
 //                        chatThread.start();
