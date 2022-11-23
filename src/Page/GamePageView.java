@@ -1,6 +1,5 @@
 package Page;
 
-import ClientThread.ChatThread;
 import Event.*;
 
 import Page.GamePagePanel.*;
@@ -32,10 +31,8 @@ public class GamePageView extends JPanel {
     public static JPanel connectUser = new ConnectUserPanel();
     public static JScrollPane Chatting = new ScrollChatting();
     public static JLabel coin = new CurrentCoin();
-
-
-    private javax.swing.Timer mainTimer = new javax.swing.Timer(5000, new MainTimer());
-    private RemainTimer timerNum;
+    public static javax.swing.Timer mainTimer = new javax.swing.Timer(5000, new MainTimer());
+    public static JLabel timerNum = new RemainTimer(5);;
     private Thread threadNum;
     public GamePageView(){
 
@@ -74,11 +71,7 @@ public class GamePageView extends JPanel {
 
         add(coin);
         add(connectUser);
-        timerNum = new RemainTimer(5);
-
-
         add(timerNum);
-
 
         add(new GamePage());
         requestFocus();
@@ -97,11 +90,6 @@ public class GamePageView extends JPanel {
                 }
             }
         });
-
-        mainTimer.start();
-        threadNum = new Thread(timerNum);
-        threadNum.start();
-
     }
     class CurrentTitle extends JLabel{
         CurrentTitle(int x, int y, String title){

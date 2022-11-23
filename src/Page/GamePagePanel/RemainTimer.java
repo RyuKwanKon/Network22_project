@@ -12,38 +12,17 @@ import java.util.Calendar;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-public class RemainTimer extends JLabel implements Runnable {
+public class RemainTimer extends JLabel {
     int second;
     public static Font BidFont=new Font("Tahoma",Font.CENTER_BASELINE,28);
-
     public RemainTimer(int second) {
         setBounds(1160,60,100,70);
         setFont(BidFont);
         setForeground(new Color(132, 167, 254));
-        setText(String.valueOf(remainTime));
+        setText(String.valueOf(second));
         setHorizontalAlignment(JLabel.LEFT);
-
-        this.second = second;
     }
-
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                if(second != 1)
-                    Thread.sleep(1000);    // 1초
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (second > 1) {
-                second -= 1;
-                setText(second + "");
-            } else
-                second=6;
-            }
-        }
-    }
+}
 
 
 

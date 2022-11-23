@@ -37,5 +37,6 @@ public class Frame extends JFrame {
 
         client = new ClientConnect();
         client.connectServer();
+
     }
 }

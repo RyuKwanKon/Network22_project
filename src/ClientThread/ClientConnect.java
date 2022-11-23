@@ -1,9 +1,15 @@
 package ClientThread;
 
+import Page.GamePagePanel.UserChat;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+
+import static Frame.Frame.client;
+import static Page.GamePageView.currentChatting;
 
 public class ClientConnect {
     private Socket socket;

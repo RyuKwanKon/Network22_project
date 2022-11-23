@@ -1,19 +1,19 @@
 package Page.GamePagePanel;
 
 import ClientThread.ChatThread;
-import ClientThread.ClientConnect;
+import GameData.ClientUserData;
 import Page.GamePageView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import static Frame.Frame.client;
+import static Frame.Frame.*;
 import static Page.GamePagePanel.ScrollChatting.vertical;
 import static Page.GamePageView.currentChatting;
 
 public class UserCurrentText extends JTextField {
-    public static ClientConnect client;
+    private ClientUserData userData = new ClientUserData();
     String text = "";
     public UserCurrentText(){
         setPreferredSize(new Dimension(260, 28));
@@ -35,7 +35,6 @@ public class UserCurrentText extends JTextField {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     if(getText() != "") {
-                        currentChatting.add(new UserChat("이승원:  " + OnChat.input.getText(), new Color(154, 254, 132)));
                         ChatThread thread = new ChatThread(client.getSocket());
                         thread.start();
                     }

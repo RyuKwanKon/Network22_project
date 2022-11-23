@@ -18,8 +18,6 @@ import static Page.GamePageView.currentChatting;
 
 public class ChatThread extends Thread {
     Socket socket = null;
-    private JTextField chat;
-    Scanner scanner = new Scanner(System.in);
 
     public ChatThread( Socket socket) {
         this.socket = socket;
@@ -31,7 +29,7 @@ public class ChatThread extends Thread {
             String userName = Login.loginInput.getText();
             System.out.println("send: " + userName + "/" + input.getText());
             PrintWriter outMsg = new PrintWriter(socket.getOutputStream(), true);
-            outMsg.println("chatting" + "/" + userName + "/" +input.getText());
+            outMsg.println("UserChat" + "/" + userName + "/" +input.getText());
             //outMsg.flush();
         } catch (Exception e) {
         }
