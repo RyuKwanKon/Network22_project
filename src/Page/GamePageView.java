@@ -7,11 +7,13 @@ import Page.GamePagePanel.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Map;
 
 import Component.*;
+import Page.GamePagePanel.RemainTimer;
 
 import static Event.MainTimer.randNumber;
 import static Event.MainTimer.randTitle;
@@ -30,8 +32,15 @@ public class GamePageView extends JPanel {
     public static JPanel connectUser = new ConnectUserPanel();
     public static JScrollPane Chatting = new ScrollChatting();
     public static JLabel coin = new CurrentCoin();
-    private Timer mainTimer = new Timer(5000, new MainTimer());
+
+
+    private javax.swing.Timer mainTimer = new javax.swing.Timer(5000, new MainTimer());
+    private RemainTimer timerNum;
+    private Thread threadNum;
     public GamePageView(){
+
+        setFocusable(true);
+        requestFocus();
         Color background = new Color(255, 255, 255);
         setLayout(null);
         setBorder(null);
@@ -65,6 +74,11 @@ public class GamePageView extends JPanel {
 
         add(coin);
         add(connectUser);
+        timerNum = new RemainTimer(5);
+
+
+        add(timerNum);
+
 
         add(new GamePage());
         requestFocus();
@@ -83,7 +97,11 @@ public class GamePageView extends JPanel {
                 }
             }
         });
+
         mainTimer.start();
+        threadNum = new Thread(timerNum);
+        threadNum.start();
+
     }
     class CurrentTitle extends JLabel{
         CurrentTitle(int x, int y, String title){

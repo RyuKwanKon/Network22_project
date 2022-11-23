@@ -1,6 +1,7 @@
 package Page.GamePagePanel;
 
 import ClientThread.ChatThread;
+import ClientThread.ClientConnect;
 import Page.GamePageView;
 
 import javax.swing.*;
@@ -12,6 +13,7 @@ import static Page.GamePagePanel.ScrollChatting.vertical;
 import static Page.GamePageView.currentChatting;
 
 public class UserCurrentText extends JTextField {
+    public static ClientConnect client;
     String text = "";
     public UserCurrentText(){
         setPreferredSize(new Dimension(260, 28));

@@ -5,7 +5,7 @@ import java.awt.*;
 import static GameData.UserData.haveCoin;
 
 public class CurrentCoin extends JLabel {
-    public static Font BidFont = new Font("Tahoma", Font.CENTER_BASELINE, 45);
+    public static Font BidFont = new Font("Tahoma", Font.CENTER_BASELINE, 28);
     public CurrentCoin(){
         setBounds(1160, 30, 100, 70);
         setFont(BidFont);

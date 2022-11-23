@@ -9,4 +9,6 @@ public class UserData {
     public static int[] remainCard = new int[52];
     public static int currentBidCoin = 0;
     public static int GameBidCoin = 0;
+
+    public static int remainTime=5;
 }
