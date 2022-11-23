@@ -13,9 +13,9 @@ class ChatThread extends Thread {
     }
 
     public void run() {
-        System.out.println("200/UserChat/" + message);
+        System.out.println(message);
         for (Map.Entry<String, PrintWriter> elem : userData.userConnectionList.entrySet()) {
-            elem.getValue().println("200/UserChat/" + message);
+            elem.getValue().println(message);
             elem.getValue().flush();
         }
     }

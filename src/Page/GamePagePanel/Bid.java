@@ -1,5 +1,6 @@
 package Page.GamePagePanel;
 
+import ClientThread.BidThread;
 import Component.*;
 import Page.GamePageView;
 
@@ -13,6 +14,7 @@ import java.io.File;
 
 import static Event.MainTimer.randNumber;
 import static Event.MainTimer.randTitle;
+import static Frame.Frame.client;
 import static GameData.UserData.*;
 
 public class Bid extends JLabel {
@@ -31,6 +33,9 @@ public class Bid extends JLabel {
                 super.mouseClicked(e);
                 GameBidCoin += 5;
                 GamePageView.alarm.setText("상품" + Data.cardInfo[randTitle - 65] + Data.cardInfoNumber.get(randNumber) + " - 금액: " + GameBidCoin + "원");
+                Thread bidThread = new BidThread(client.getSocket());
+                bidThread.start();
+
             }
         });
     }

@@ -11,9 +11,9 @@ import java.util.Scanner;
 import GameData.ClientUserData;
 
 import static Frame.Frame.client;
+import static GameData.UserData.GameBidCoin;
 import static Page.GamePagePanel.OnChat.input;
-import static Page.GamePageView.currentChatting;
-import static Page.GamePageView.timerNum;
+import static Page.GamePageView.*;
 
 public class TimerThread extends Thread{
     Socket socket = null;
@@ -34,10 +34,13 @@ public class TimerThread extends Thread{
                     if (splitMessage[1].equals("Timer")) {
                         timerNum.setText(splitMessage[2]);
                     }
-                    if(splitMessage[1].equals("UserChat")){
+                    else if(splitMessage[1].equals("UserChat")){
                         System.out.println(response);
                         System.out.println(splitMessage[2]);
                         currentChatting.add(new UserChat(splitMessage[2], new Color(154, 254, 132)));
+                    }
+                    else if(splitMessage[1].equals("RegisterBid")){
+                        alarm.setText("상품 " + userData.currentCard +" - 현재 금액: " + splitMessage[2] + "님 " + splitMessage[3] + "원");
                     }
                 }
             }

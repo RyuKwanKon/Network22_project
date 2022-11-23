@@ -2,5 +2,7 @@ package GameData;
 
 public class ClientUserData {
     public static String userName;
-    static int coin;
+    public static int coin;
+    public static int userBid;
+    public static String currentCard = "♠A";
 }

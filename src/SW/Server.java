@@ -55,11 +55,13 @@ public class Server {
 
 class ServerThread extends Thread {
     private UserData userData;
+    private ServerData serverData;
     private Socket socket = null;
     BufferedReader inFromClient = null;
     PrintWriter outToClient = null;
 
     public ServerThread(Socket socket) {
+        this.serverData = new ServerData();
         this.userData = new UserData();
         this.socket = socket;
         try {
@@ -97,21 +99,23 @@ class ServerThread extends Thread {
                         for(String e : userData.nameList){userNameList = userNameList.concat("/"+e);}
                         outToClient.println("200/gameStart/"+splitMessage[1] + "/100" +userNameList);
                         outToClient.flush();
-//                        ChatThread chatThread = new ChatThread("");
-//                        chatThread.start();
                     }
                     break;
                     case "UserChat": {
                         String message = splitMessage[1] + ": " + splitMessage[2];
-                        ChatThread chatThread = new ChatThread(message);
+                        ChatThread chatThread = new ChatThread("200/UserChat/" + message);
                         chatThread.start();
+                    }
+                    break;
+                    case "RegisterBid": {
+                        userData.registerBid(splitMessage[1]);
+                        serverData.AuctionRemainTime = 5;
                     }
                     break;
                     case "successBid": {
                         //[Server -> Client] Thread도 있어야 할 것 같은데 모르겠다
                         //낙찰/유저이름/트럼프카드/금액
                         //낙찰된 유저의 출력 스트림 & 이름 저장
-
 //                            PrintWriter dataToClient = null;
 //                            for(Map.Entry<PrintWriter, String> entry: userConnectionList.entrySet()){
 //                                if(entry.getValue().equals(splitMessage[1])){
@@ -131,12 +135,6 @@ class ServerThread extends Thread {
                     case "noBid": {
                         //아무도 입찰 안함
                         ChatThread chatThread = new ChatThread("아무도 응찰하지 않아" + splitMessage[2] + "는 유찰되었습니다!");
-                        chatThread.start();
-                    }
-                    case "chat": {
-                        // 채팅 쓰레드 - ChatThread
-                        // chat/msg
-                        ChatThread chatThread = new ChatThread(splitMessage[1]);
                         chatThread.start();
                     }
                     case "win": {
