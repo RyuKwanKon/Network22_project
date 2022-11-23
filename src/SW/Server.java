@@ -41,13 +41,13 @@ public class Server {
         try {
             serverSocket = new ServerSocket(1111);
             while (true) {
-
                 //4명의 유저를 받는다.
                 System.out.println("[Server] Wait until client come...");
                 socket = serverSocket.accept();
                 System.out.println("[server] New client connected");
                 ServerThread serverthread = new ServerThread(socket);
                 serverthread.start();
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -155,7 +155,6 @@ class ServerThread extends Thread {
 ////                        chatThread.start();
 //                        break;
 //                    }
-
 //    @Override
 //    public synchronized void run() {
 //        String requestUserName = "";
@@ -221,9 +220,11 @@ public synchronized void run() {
                     //userConnectionList.put(outToClient, splitMessage[1]);
                     //User의 정보를 받아서
                     //4명이 요청이 올때까지 기다려.
-                    System.out.println(userData.count);
-                    userData.count++;
-                    while(userData.count < 4){ System.out.println();}
+                    System.out.println(count);
+                    count++;
+                    while(count < 4){
+                        wait(1);
+                    }
                     outToClient.println("200/gameStart");
                     outToClient.flush();
                     System.out.println(userData.count + "game start");
@@ -232,29 +233,28 @@ public synchronized void run() {
 //                        chatThread.start();
                     break;
                 }
-
-                    case "bidding": {   // 입찰 여부
-                        // 유저 입찰여부 저장
-                        // BiddingInfo.storeInfo(유저 이름, 입찰 여부(0, 1));
-                        UserData.userBiddingInfo.put(splitMessage[1], Integer.parseInt(splitMessage[2]));
-                        // 데이터 잘 저장됐는지 테스트문
-                        if(UserData.userBiddingInfo.size() == 2)
-                            System.out.println(UserData.userBiddingInfo);
-                        // 만약에 혼자서만 입찰을 했으면 단독 입찰로 경매X
-/*                        if(BiddingInfo.BiddingNum() == 1)
-                            new SingleBid();
-                        else splitMessage =*/
-                        // 만약에 모두가 입찰하지 않으면
-                        // 8번 단독 입찰
-                        if(BiddingInfo.BiddingNum() == 0){
-/*                            AuctionInfo cardInfo = new AuctionInfo();
-                            String card = cardInfo.currentRoundInfo();
-                            splitMessage = "noBid/none/".concat(card).split("/");
-                            //continue;*/
-                            // 그냥 noBid 일때 상태 작성
-                            break;
-                        }
-                    }
+//                    case "bidding": {   // 입찰 여부
+//                        // 유저 입찰여부 저장
+//                        // BiddingInfo.storeInfo(유저 이름, 입찰 여부(0, 1));
+//                        UserData.userBiddingInfo.put(splitMessage[1], Integer.parseInt(splitMessage[2]));
+//                        // 데이터 잘 저장됐는지 테스트문
+//                        if(UserData.userBiddingInfo.size() == 2)
+//                            System.out.println(UserData.userBiddingInfo);
+//                        // 만약에 혼자서만 입찰을 했으면 단독 입찰로 경매X
+///*                        if(BiddingInfo.BiddingNum() == 1)
+//                            new SingleBid();
+//                        else splitMessage =*/
+//                        // 만약에 모두가 입찰하지 않으면
+//                        // 8번 단독 입찰
+//                        if(BiddingInfo.BiddingNum() == 0){
+///*                            AuctionInfo cardInfo = new AuctionInfo();
+//                            String card = cardInfo.currentRoundInfo();
+//                            splitMessage = "noBid/none/".concat(card).split("/");
+//                            //continue;*/
+//                            // 그냥 noBid 일때 상태 작성
+//                            break;
+//                        }
+//                    }
                     case "bid": {   // 경매시 입찰단계
                         // 입찰 요청시 경매 정보 저장
                         String bidState = splitMessage[1] + '/' + splitMessage[2];
@@ -281,10 +281,12 @@ public synchronized void run() {
                         ChatThread chatThread = new ChatThread(UserData.userConnectionList, "익명의 참가자가" + splitMessage[3] +
                                 "원으로" + splitMessage[2] + "를 낙찰받았습니다!");
                         chatThread.start();
+
+                        // 낙찰되면 여기서 다음 공유변수 바꿔준 다음에 시작
+                        // 여기다가 함수 추가
                         break;
                     }
                     case "noBid": { // 아무도 입찰 안했을 때
-
                         //아무도 입찰 안함
                         ChatThread chatThread = new ChatThread(UserData.userConnectionList, "아무도 응찰하지 않아" + splitMessage[2] + "는 유찰되었습니다!");
                         chatThread.start();
@@ -296,24 +298,24 @@ public synchronized void run() {
                         ChatThread chatThread = new ChatThread(UserData.userConnectionList, splitMessage[1]);
                         chatThread.start();
                     }
-                    case "win": {   // 조합 완성시
-                        // 조합 완성시에
-                        // win/유저이름
-//                            PrintWriter dataToClient = null;
-//                            for(Map.Entry<PrintWriter, String> entry: userConnectionList.entrySet()){
-//                                if(entry.getValue().equals(splitMessage[1])){
-//                                    dataToClient = entry.getKey();
-//                                }
-//                            }
-                        outToClient.println("승리");
-                        outToClient.flush();
-//                            dataToClient.println("승리");
-//                            dataToClient.flush();
-
-                        ChatThread chatThread = new ChatThread(UserData.userConnectionList, "참가자" + splitMessage[1] + "" +
-                                "이(가) 가장 먼저 조합을 완성해 우승하였습니다!");
-                        chatThread.start();
-                    }
+//                    case "win": {   // 조합 완성시
+//                        // 조합 완성시에
+//                        // win/유저이름
+////                            PrintWriter dataToClient = null;
+////                            for(Map.Entry<PrintWriter, String> entry: userConnectionList.entrySet()){
+////                                if(entry.getValue().equals(splitMessage[1])){
+////                                    dataToClient = entry.getKey();
+////                                }
+////                            }
+//                        outToClient.println("승리");
+//                        outToClient.flush();
+////                            dataToClient.println("승리");
+////                            dataToClient.flush();
+//
+//                        ChatThread chatThread = new ChatThread(UserData.userConnectionList, "참가자" + splitMessage[1] + "" +
+//                                "이(가) 가장 먼저 조합을 완성해 우승하였습니다!");
+//                        chatThread.start();
+//                    }
                     default:
                         break;
                 }
@@ -333,7 +335,9 @@ public synchronized void run() {
             System.out.println("[" + requestUserName + " terminate connection]");
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+    }
 //            userInfo.put(requestMessage, userNum);
 //            System.out.println("[Server] Create new connection");
 //            sendAll("[" + name + "] has entered the room");
