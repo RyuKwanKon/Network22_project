@@ -32,6 +32,7 @@ public class ChatThread extends Thread {
             System.out.println("send: " + userName + "/" + input.getText());
             PrintWriter outMsg = new PrintWriter(socket.getOutputStream(), true);
             outMsg.println("chatting" + "/" + userName + "/" +input.getText());
+            //outMsg.flush();
         } catch (Exception e) {
         }
     }

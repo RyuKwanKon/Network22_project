@@ -16,7 +16,6 @@ import SW.*;
 import static Frame.Frame.*;
 import static Page.GamePagePanel.OnChat.input;
 import static Page.GamePageView.currentChatting;
-import SW.*;
 
 public class InputButton extends JButton{
     public InputButton(){
@@ -32,20 +31,19 @@ public class InputButton extends JButton{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    //SW.ServetThread.beforeGS(count);
                     String userName = Login.loginInput.getText();
                     client.getOutMsg().println("userConnection/" + userName);
-                    LodingPage.setVisible(true);
-                    LoginPage.setVisible(false);
+                    //대기화면
                     String response = client.getInMsg().readLine();
                     String[] splitMessage = response.split("/");
                     System.out.println(response);
                     if(splitMessage[0].equals("200")){
-                        if(splitMessage[1].equals("gameStart")){
-                            LodingPage.setVisible(false);
+//                        if(splitMessage[1].equals("waitClient")){}
+//                        else if(splitMessage[1].equals("gameStart")){
+                            LoginPage.setVisible(false);
                             gamePage.setVisible(true);
                             gamePage.requestFocus();
-                        }
+//                        }
                     }
                 } catch (Exception ex) {
 //                    throw new RuntimeException(ex);
