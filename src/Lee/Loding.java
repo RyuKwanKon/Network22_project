@@ -17,8 +17,6 @@ import static Event.MainTimer.randTitle;
 
 public class Loding extends JPanel {
 
-
-    public static JLabel Lodingimg=new LodingImg();
     public Loding() {
         setBounds(0, 0, 1280, 720);
         setLayout(null);
@@ -29,23 +27,6 @@ public class Loding extends JPanel {
         add(new CurrentTitle(690, 210, "."));
         add(new CurrentTitle(710, 210, "."));
         add(new GamePage());
-    }
-
-    class LodingPicture extends JLabel {
-        LodingPicture() {
-            try {
-                setBounds(300, 0, 980, 750);
-                BufferedImage tempImg = ImageIO.read(new File("./assets/LoginBackground.png"));
-                ImageIcon temp_img = new ImageIcon(tempImg);
-                Image t = temp_img.getImage().getScaledInstance(980, 750, Image.SCALE_SMOOTH);
-                setIcon(new ImageIcon(t));
-                setBorder(null);
-
-
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-        }
     }
     class CurrentTitle extends JLabel{
         CurrentTitle(int x, int y, String title){

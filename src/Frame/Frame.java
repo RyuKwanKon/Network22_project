@@ -28,15 +28,14 @@ public class Frame extends JFrame {
         contentPane.setBackground(background);
         contentPane.setLayout(null);
 
+        contentPane.add(LoginPage);
+        LoginPage.setVisible(true);
         contentPane.add(gamePage);
         gamePage.setVisible(false);
-        contentPane.add(LoginPage);
         contentPane.add(LodingPage);
+        LodingPage.setVisible(false);
 
-
-    /*public static void main(String[] args) {
-        JFrame main = new Frame();
-        main.setVisible(true);
-    }*/
+        client = new ClientConnect();
+        client.connectServer();
     }
 }

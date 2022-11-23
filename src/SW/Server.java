@@ -4,8 +4,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import static SW.Server.count;
-
 class Ex {
     public BufferedReader inFromClient = null;
     public PrintWriter outToClient = null;
@@ -28,7 +26,6 @@ class Ex {
 
 public class Server {
     public static boolean canConnection = true;
-    public static int count = 0;
     public static void main(String[] args) {
         Server server = new Server();
         server.start();
@@ -64,40 +61,8 @@ public class Server {
     }
 }
 
-//public class GameStart() {
-//
-//    public void start() {
-//        System.out.println("게임 시작");
-//        sendAll("게임 시작합니다. 5초만 기다려 주세요");
-//        sendAll("이번 " + currentRound + " 에 경매할 카드는 + " + currentCard + " 입니다!");
-//        sendAll("입찰 여부를 10초 동안 결정해주세요!");
-//    }
-//
-//    {
-//        inFromClient.readLine();
-//        while (inFromClient != null) {
-//            String data = inFromClient.readLine();
-//            System.out.println(data);
-//        }
-//    }
-//}
-
-//    GameStart gameStart = new GameStart();
-//            gameStart.start();
-//
-//                    try {
-//                    serverSocket = new ServerSocket(1111);
-//
-//                    while (true) {
-//                    System.out.println("[Game] Wait until request come...");
-//                    socket = serverSocket.accept();
-//                    System.out.println("[Game] New request received");
-//                    GameThread gameThread = new GameThread(socket);
-//                    gameThread.start();
-//                    }
-//                    }
-
 class ServerThread extends Thread {
+    private ServerFunction function;
     int userNum = 0;
     //static HashMap<PrintWriter, Integer> userConnectionInfo = new HashMap<PrintWriter, Integer>(4);
     //static ArrayList<String> userNameList = new ArrayList<String>(4);
@@ -107,6 +72,7 @@ class ServerThread extends Thread {
     PrintWriter outToClient = null;
 
     public ServerThread(Socket socket) {
+        this.function = new ServerFunction();
         this.socket = socket;
         try {
             outToClient = new PrintWriter(socket.getOutputStream());
@@ -114,6 +80,15 @@ class ServerThread extends Thread {
         } catch (IOException e) {
             System.out.println("연결 오류");
             e.printStackTrace();
+        }
+    }
+
+    public synchronized void waitClient(int cnt) {
+        try{
+            if(cnt != 4) wait();
+            else if(cnt == 4) notifyAll();
+        }catch (Exception e){
+
         }
     }
 
@@ -127,7 +102,7 @@ class ServerThread extends Thread {
             while (inFromClient != null) {
                 requestMessage = inFromClient.readLine();
                 System.out.println(requestMessage);
-                if (count == 5) {
+                if (function.count == 5) {
                     System.out.println("접속 불가");
                     return;
                 }
@@ -141,20 +116,15 @@ class ServerThread extends Thread {
                 switch (splitMessage[0]) {
                     case "userConnection": {    //userConnection/UserName;
                         System.out.println(splitMessage[1]);
-                        count++;
                         //userConnectionList.put(outToClient, splitMessage[1]);
                         //User의 정보를 받아서
                         //4명이 요청이 올때까지 기다려.
-                        System.out.println(count);
-                        try{
-                            if(count != 4) wait();
-                            else if(count == 4){
-                                notifyAll();
-                            }
-                        }catch (Exception error){}
+                        System.out.println(function.count);
+                        function.count++;
+                        while(function.count < 4){ System.out.println();}
                         outToClient.println("200/gameStart");
                         outToClient.flush();
-                        System.out.println(count + "game start");
+                        System.out.println(function.count + "game start");
                         //4명이 접속했다는 요청을 클라이언트에게 보내
 //                        ChatThread chatThread = new ChatThread(userConnectionList);
 //                        chatThread.start();
@@ -214,61 +184,10 @@ class ServerThread extends Thread {
                         break;
                 }
             }
-//            } catch(IOException e){
-//                //e.printStackTrace();
-//                System.out.println("[" + requestMessage + "] is disconnected");
-//            } finally{
-//                sendAll("[" + requestUserName + "] has left the game");
-//                userConnectionList.remove(outToClient);
-//                try {
-//                    socket.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
             System.out.println("[" + requestUserName + " terminate connection]");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-//            userInfo.put(requestMessage, userNum);
-//            System.out.println("[Server] Create new connection");
-//            sendAll("[" + name + "] has entered the room");
-
-            /*
-            if(userNum >= 1){
-                sendAll("모든 유저가 접속했습니다");
-                //this.GameStart();
-            }
-
-             */
-        //sendAll("모든 유저가 접속했습니다");
-
-//            while (inFromClient != null) {
-//
-//                String string = inFromClient.readLine();
-//                if ("chat : ".equals(string.substring(0, 7))) {
-//                    if ("chat : 게임 서버 접속".equals(string)) {
-//                        System.out.println("유저 접속");
-//                        continue;
-//                    }
-//                    sendAll(name + " : " + string.substring(7) + "");
-//                } else if ("data : ".equals(string.substring(0, 7))) {
-//
-//                    if ("data : bid".equals(string)) {
-//                    }
-//                    System.out.println(name + " : " + string.substring(7) + "");
-//                }
-//
-//            }
-        //sendAll(name + " : " + chatting + "");
-
-
-//        private void sendAll (String s){
-//            for (PrintWriter out : userConnectionList.keySet()) {
-//                out.println(s);
-//                out.flush();
-//            }
-//        }
     }
 
     class ChatThread extends Thread {
