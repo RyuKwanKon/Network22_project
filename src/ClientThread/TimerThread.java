@@ -40,7 +40,8 @@ public class TimerThread extends Thread{
                         currentChatting.add(new UserChat(splitMessage[2], new Color(154, 254, 132)));
                     }
                     else if(splitMessage[1].equals("RegisterBid")){
-                        alarm.setText("상품 " + userData.currentCard +" - 현재 금액: " + splitMessage[2] + "님 " + splitMessage[3] + "원");
+                   //     alarm.setText("상품 " + userData.currentCard +" - 현재 금액: " + splitMessage[2] + "님 " + splitMessage[3] + "원"); // 상품, 누가 입찰했는지, 가격
+                        alarm.setText("상품 " + userData.currentCard + " - 현재 금액: " + splitMessage[3] + "원"); // 상품 + 가격만, 입찰은 비밀
                     }
                 }
             }

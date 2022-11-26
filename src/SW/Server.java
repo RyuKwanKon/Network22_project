@@ -10,11 +10,13 @@ import java.util.concurrent.TimeUnit;
 
 public class Server {
     private UserData userData;
+    public int socketCount = 0;
     public static void main(String[] args) {
         Server server = new Server();
         server.start();
     }
-    public Server(){
+
+    public Server() {
         this.userData = new UserData();
     }
 
@@ -23,11 +25,17 @@ public class Server {
         Socket socket = null;
         try {
             serverSocket = new ServerSocket(1111);
-            ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-            service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);
+//            ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+//            service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);
             while (true) {
                 //4명의 유저를 받는다.
+
                 System.out.println("[Server] Wait until client come...");
+                if(socketCount == 4){
+                    GameThread gameThread = new GameThread();
+                    gameThread.start();
+                    //System.out.println("아니 왜 안켜지냐고 ㅡㅡ");
+                }
                 socket = serverSocket.accept();
                 System.out.println("[server] New client connected");
                 if (userData.count == 4) {
@@ -36,9 +44,12 @@ public class Server {
                 }
                 ServerThread serverthread = new ServerThread(socket);
                 serverthread.start();
+                socketCount++;
+
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("[Server] User disconnection");
+            //e.printStackTrace();
         } finally {
             if (serverSocket != null) {
                 try {
@@ -60,6 +71,7 @@ class ServerThread extends Thread {
     BufferedReader inFromClient = null;
     PrintWriter outToClient = null;
 
+    String[] splitMessage = null;
     public ServerThread(Socket socket) {
         this.serverData = new ServerData();
         this.userData = new UserData();
@@ -82,7 +94,7 @@ class ServerThread extends Thread {
             while (inFromClient != null) {
                 requestMessage = inFromClient.readLine();
                 System.out.println(requestMessage);
-                String[] splitMessage = requestMessage.split("/");
+                splitMessage = requestMessage.split("/");
                 requestUserName = splitMessage[1];
                 // userConnection/류관곤/현재 금액/입찰 금액/
                 if (splitMessage[0].equals("end")) return;
@@ -93,16 +105,30 @@ class ServerThread extends Thread {
                         userData.userConnectionList.put(splitMessage[1], outToClient);
                         userData.userAccount.put(splitMessage[1], 100);
                         userData.nameList.add(splitMessage[1]);
-                        while(userData.count < 4){wait(1);}
+
+//                        if (userData.count == 4) {
+//                            GameThread gameThread = new GameThread();
+//                            gameThread.start();
+//                            System.out.println("아니 왜 안켜지냐고 ㅡㅡ");
+//                        }
+                        while (userData.count < 4) {
+                            wait(1);
+                        }
                         String userNameList = "";
                         String result;
-                        for(String e : userData.nameList){userNameList = userNameList.concat("/"+e);}
-                        outToClient.println("200/gameStart/"+splitMessage[1] + "/100" +userNameList);
+                        for (String e : userData.nameList) {
+                            userNameList = userNameList.concat("/" + e);
+                        }
+                        outToClient.println("200/gameStart/" + splitMessage[1] + "/100" + userNameList);
                         outToClient.flush();
                     }
                     break;
                     case "UserChat": {
-                        String message = splitMessage[1] + ": " + splitMessage[2];
+                        String message = splitMessage[1] + ": ";
+                        for (int i = 2; i < splitMessage.length; i++) {
+                            message += splitMessage[i];
+                        }
+                        //for(String msg : splitMessage)
                         ChatThread chatThread = new ChatThread("200/UserChat/" + message);
                         chatThread.start();
                     }
@@ -132,39 +158,92 @@ class ServerThread extends Thread {
                                 "원으로" + splitMessage[2] + "를 낙찰받았습니다!");
                         chatThread.start();
                     }
-                    case "noBid": {
-                        //아무도 입찰 안함
-                        ChatThread chatThread = new ChatThread("아무도 응찰하지 않아" + splitMessage[2] + "는 유찰되었습니다!");
-                        chatThread.start();
-                    }
-                    case "win": {
-                        // 조합 완성시에
-                        // win/유저이름
-//                            PrintWriter dataToClient = null;
-//                            for(Map.Entry<PrintWriter, String> entry: userConnectionList.entrySet()){
-//                                if(entry.getValue().equals(splitMessage[1])){
-//                                    dataToClient = entry.getKey();
-//                                }
-//                            }
-                        outToClient.println("승리");
-                        outToClient.flush();
-//                            dataToClient.println("승리");
-//                            dataToClient.flush();
-
-                        ChatThread chatThread = new ChatThread("참가자" + splitMessage[1] + "" +
-                                "이(가) 가장 먼저 조합을 완성해 우승하였습니다!");
-                        chatThread.start();
-                    }
+//                    case "noBid": {
+//                        //아무도 입찰 안함
+//                        ChatThread chatThread = new ChatThread("아무도 응찰하지 않아" + splitMessage[2] + "는 유찰되었습니다!");
+//                        chatThread.start();
+//                    }
+//                    case "win": {
+//                        // 조합 완성시에
+//                        // win/유저이름
+////                            PrintWriter dataToClient = null;
+////                            for(Map.Entry<PrintWriter, String> entry: userConnectionList.entrySet()){
+////                                if(entry.getValue().equals(splitMessage[1])){
+////                                    dataToClient = entry.getKey();
+////                                }
+////                            }
+//                        outToClient.println("승리");
+//                        outToClient.flush();
+////                            dataToClient.println("승리");
+////                            dataToClient.flush();
+//
+//                        ChatThread chatThread = new ChatThread("참가자" + splitMessage[1] + "" +
+//                                "이(가) 가장 먼저 조합을 완성해 우승하였습니다!");
+//                        chatThread.start();
+//                    }
                     default:
                         break;
                 }
             }
             System.out.println("[" + requestUserName + " terminate connection]");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("[Server] User " + splitMessage[1] + " is disconnected");
+            // User disconnected - 유저 정보 삭제해야함
+            //e.printStackTrace();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        }
+    }
+}
+
+class GameThread extends Thread {
+    public synchronized void run() {
+        System.out.println("GameStart");
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);  // 무조건 1초마다 남은시간 출력
+        try {
+            while (ServerData.currentRound <= 25) {
+                ServerData.currentRound++;
+                while(ServerData.AuctionRemainTime > -1){
+                    wait(1);
+                }
+                System.out.println(ServerData.currentRound + "라운드가 종료되었습니다");
+                ChatThread chatThread1 = new ChatThread("200/UserChat/" + "라운드가 종료되었습니다!");
+                chatThread1.start();
+                wait(1000);
+                if(UserData.currentBidUser.equals("noBid")){
+                    ChatThread chatThread = new ChatThread("200/UserChat/아무도 응찰하지 않아 " + ServerData.currentCard + "는 유찰되었습니다!");
+                    chatThread.start();
+                }else{
+                    ChatThread chatThread = new ChatThread("200/UserChat/" + UserData.currentBidCost + "원을 입찰한 익명의 유저가 낙찰되었습니다!");
+                    chatThread.start();
+                }
+                // 유저 덱리스트에 카드 추가
+                // 낙찰된 유저에서 낙찰 메시지 출력
+                // 카드 중복 안되게 유저 카드 리스트에 카드 추가
+                // 유저 계좌에 돈 감소시키기
+                // 낙찰된 유저의 카드 리스트 확인
+                // 만약 조합이 완성되었다면 break;
+                // 다음 카드를 선택하는 중입니다... - 출력
+                wait(4000);
+                ServerData.usedCardList.add(ServerData.currentCard);
+                UserData.currentBidCost = 0;
+                UserData.currentBidUser = "noBid";
+                ServerData.AuctionRemainTime = 5;
+            }
+            if(ServerData.currentRound == 26){
+                ChatThread chatThread = new ChatThread("200/UserChat/아무도 조합을 완성하지 못해서 게임이 무승부로 끝났습니다!");
+                chatThread.start();
+            }
+            else{
+                // 조합을 완성시킨 유저 이름 출력
+            }
+
+        } catch(InterruptedException e){
+            e.printStackTrace();
         }
     }
 
+
+   // public void Message
 }
