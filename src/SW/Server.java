@@ -225,6 +225,7 @@ class GameThread extends Thread {
                 }
                 chatThread.start();
 
+
                 ServerData.usedCardList.add(ServerData.currentCard); // -- 3번
                 new AddCard(); // -- 1번
                 new EndRoundMessage(); // -- 2번
@@ -232,6 +233,14 @@ class GameThread extends Thread {
                 //new UpdateUserAccount().updateWinnerAccount(); // -- 4번
                 ServerData.currentCard = new DrawRandomCard().randomCard();   //새로운 카드 추가
                 ChatThread cardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
+
+//                if(UserData.currentBidCost != 0) {
+//                    if (VictoryCondition.check(UserData.userDeckList) != 0) {
+//                        chatThread = new ChatThread("200/UserChat/Server/12345축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
+//                        chatThread.start();
+//
+//                    }
+//                }
 
 
                 UserData.currentBidCost = 0;    // 입찰가 초기화
@@ -248,6 +257,8 @@ class GameThread extends Thread {
                 // 8 -- 라운드 마다 지급하는 돈 주기 O
                 cardInfo.start();   // 카드 뿌려줌
 
+
+
                 // -- 8번인데 클라이언트에서 다음 라운드 카드 받을때 자체적으로 금액 증가하므로 서버의 클라 금액만 증가
                 new UpdateUserAccount().giveUserIncome();
                 wait(4000);
@@ -258,7 +269,7 @@ class GameThread extends Thread {
                 chatThread.start();
             }
             else{
-                // 조합을 완성시킨 유저 이름 출력
+
             }
 
         } catch(InterruptedException e){
