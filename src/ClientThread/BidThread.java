@@ -17,7 +17,7 @@ public class BidThread extends Thread{
     @Override
     public void run() {
         try {
-            if(userData.coin < userData.userBid + 5) {
+            if(userData.coin < userData.userBid + 5) {  // 이거 UserData.haveCoin
                 userData.userBid += 5;
                 String userName = userData.userName;
                 System.out.println("send: " + userName + "/" + userData.userBid);

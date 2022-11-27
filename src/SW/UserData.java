@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class UserData {
-
-    static boolean isStart = false;
     static int count = 0;
     static ArrayList<String> nameList = new ArrayList<String>(4);   //유저 이름
     static HashMap<String, Integer> userBiddingInfo = new HashMap<String, Integer>(4);
@@ -14,7 +12,13 @@ public class UserData {
     static HashMap<String, PrintWriter> userConnectionList = new HashMap<String, PrintWriter>(4);
     static String currentBidUser = "noBid";
     static int currentBidCost = 0;
-    public HashMap<String, Integer> userAccount = new HashMap<String, Integer>(4);
+    public static HashMap<String, Integer> userAccount = new HashMap<String, Integer>(4);
+
+    static String[] user1Deck = new String[26];
+    static String[] user2Deck = new String[26];
+    static String[] user3Deck = new String[26];
+    static String[] user4Deck = new String[26];
+
     synchronized public void registerBid(String userName){
         if(this.userAccount.get(userName) > currentBidCost) {
             this.currentBidUser = userName;

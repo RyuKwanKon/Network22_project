@@ -1,5 +1,6 @@
 package ClientThread;
 
+import GameData.UserData;
 import Lee.Login;
 import Page.GamePagePanel.OnChat;
 import Page.GamePagePanel.UserChat;
@@ -41,7 +42,16 @@ public class TimerThread extends Thread{
                     }
                     else if(splitMessage[1].equals("RegisterBid")){
                    //     alarm.setText("상품 " + userData.currentCard +" - 현재 금액: " + splitMessage[2] + "님 " + splitMessage[3] + "원"); // 상품, 누가 입찰했는지, 가격
-                        alarm.setText("상품 " + userData.currentCard + " - 현재 금액: " + splitMessage[3] + "원"); // 상품 + 가격만, 입찰은 비밀
+                        alarm.setText("상품 " + ClientUserData.currentCard + " - 현재 금액: " + splitMessage[3] + "원"); // 상품 + 가격만, 입찰은 비밀
+                    }
+                    else if(splitMessage[1].equals("CurrentCard")){
+                        ClientUserData.currentCard = splitMessage[2];
+                    }
+                    else if(splitMessage[1].equals("WinBidding")){
+                        ClientUserData.coin = Integer.parseInt(splitMessage[2]);
+                    }
+                    else if(splitMessage[1].equals("Income")){
+                        ClientUserData.coin += Integer.parseInt(splitMessage[2]);
                     }
                 }
             }
