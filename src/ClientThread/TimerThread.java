@@ -44,13 +44,13 @@ public class TimerThread extends Thread{
                    //     alarm.setText("상품 " + userData.currentCard +" - 현재 금액: " + splitMessage[2] + "님 " + splitMessage[3] + "원"); // 상품, 누가 입찰했는지, 가격
                         alarm.setText("상품 " + ClientUserData.currentCard + " - 현재 금액: " + splitMessage[3] + "원"); // 상품 + 가격만, 입찰은 비밀
                     }
-                    else if(splitMessage[1].equals("CurrentCard")){
+                    else if(splitMessage[1].equals("CurrentCard")){ // 다음 라운드 카드
                         ClientUserData.currentCard = splitMessage[2];
                     }
-                    else if(splitMessage[1].equals("WinBidding")){
+                    else if(splitMessage[1].equals("WinBidding")){  //
                         ClientUserData.coin = Integer.parseInt(splitMessage[2]);
                     }
-                    else if(splitMessage[1].equals("Income")){
+                    else if(splitMessage[1].equals("Income")){  // 매 라운드 시작할때마다 돈 주는거
                         ClientUserData.coin += Integer.parseInt(splitMessage[2]);
                     }
                 }

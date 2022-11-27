@@ -105,6 +105,7 @@ class ServerThread extends Thread {
                         userData.userConnectionList.put(splitMessage[1], outToClient);
                         userData.userAccount.put(splitMessage[1], 100);
                         userData.nameList.add(splitMessage[1]);
+                        userData.userDeckList.put(splitMessage[1], "");
 
 //                        if (userData.count == 4) {
 //                            GameThread gameThread = new GameThread();
@@ -119,7 +120,7 @@ class ServerThread extends Thread {
                         for (String e : userData.nameList) {
                             userNameList = userNameList.concat("/" + e);
                         }
-                        outToClient.println("200/gameStart/" + splitMessage[1] + "/100" + userNameList);
+                        outToClient.println("200/gameStart/Server/" + splitMessage[1] + "/100" + userNameList);
                         outToClient.flush();
                     }
                     break;
@@ -129,7 +130,7 @@ class ServerThread extends Thread {
                             message += splitMessage[i];
                         }
                         //for(String msg : splitMessage)
-                        ChatThread chatThread = new ChatThread("200/UserChat/" + message);
+                        ChatThread chatThread = new ChatThread("200/UserChat/Chat/" + message);
                         chatThread.start();
                     }
                     break;
@@ -202,7 +203,7 @@ class GameThread extends Thread {
     public synchronized void run() {
         System.out.println("GameStart");
         ServerData.currentCard = new DrawRandomCard().randomCard();
-        ChatThread firstCardInfo = new ChatThread("200/currentCard/" + ServerData.currentCard);
+        ChatThread firstCardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
         firstCardInfo.start();
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);  // 무조건 1초마다 남은시간 출력
@@ -214,28 +215,30 @@ class GameThread extends Thread {
                 }
                 ServerData.auctionState = false;
                 System.out.println(ServerData.currentRound + "라운드가 종료되었습니다");
-                ChatThread EndRound = new ChatThread("200/UserChat/" + "라운드가 종료되었습니다!");
+                ChatThread EndRound = new ChatThread("200/UserChat/Server" + ServerData.currentRound + "라운드가 종료되었습니다!");
                 EndRound.start();
                 wait(1000);
-                ChatThread chatThread;
-                if(UserData.currentBidUser.equals("noBid")){
-                    chatThread = new ChatThread("200/UserChat/아무도 응찰하지 않아 " + ServerData.currentCard + "는 유찰되었습니다!");
-                }else{
-                    chatThread = new ChatThread("200/UserChat/" + UserData.currentBidCost + "원을 입찰한 익명의 유저가 낙찰되었습니다!");
-                }
-                chatThread.start();
+//                ChatThread chatThread;
+//                if(UserData.currentBidUser.equals("noBid")){
+//                    chatThread = new ChatThread("200/EndRound/NoBidding/아무도 응찰하지 않아 " + ServerData.currentCard + "는 유찰되었습니다!");
+//                }else{
+//                    chatThread = new ChatThread("200/EndRound/WinBidding/" + UserData.currentBidCost + "원을 입찰한 익명의 유저가 낙찰되었습니다!");
+//                }
+//                chatThread.start();
 
                 ServerData.usedCardList.add(ServerData.currentCard); // -- 3번
-                new BiddingWinMessage(); // -- 2번
-                // UpdateUserAccount 에서 에러발생함 - 한번 낙찰받으면 다음에 낙찰이 안됨
+                new AddCard(); // -- 1번
+                new EndRoundMessage(); // -- 2번
+                //UpdateUserAccount 에서 에러발생함 - 한번 낙찰받으면 다음에 낙찰이 안됨
                 //new UpdateUserAccount().updateWinnerAccount(); // -- 4번
                 ServerData.currentCard = new DrawRandomCard().randomCard();   //새로운 카드 추가
                 ChatThread cardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
 
-                UserData.currentBidCost = 0;
-                UserData.currentBidUser = "noBid";
-                ServerData.auctionRemainTime = 5;
-                ServerData.auctionState = true;
+
+                UserData.currentBidCost = 0;    // 입찰가 초기화
+                UserData.currentBidUser = "noBid";  // 입찰자 초기화
+                ServerData.auctionRemainTime = 5;   // 경매 카운트다운 초기화
+                ServerData.auctionState = true; // 다음 라운드시 입찰할 수 있게
                 // 1 -- 유저 덱리스트에 카드 추가
                 // 2 -- 낙찰된 유저에서 낙찰 메시지 출력 O
                 // 3 -- 카드 중복 안되게 유저 카드 리스트에 카드 추가 O
@@ -244,14 +247,15 @@ class GameThread extends Thread {
                 // 6 -- 만약 조합이 완성되었다면 break;
                 // 7 -- 다음 카드를 선택하는 중입니다... - 출력 - 하든 안하든 무방
                 // 8 -- 라운드 마다 지급하는 돈 주기 O
-                cardInfo.start();
-                //new UpdateUserAccount().giveUserIncome(); // -- 8번
-                wait(4000);
+                cardInfo.start();   // 카드 뿌려줌
 
+                // -- 8번인데 클라이언트에서 다음 라운드 카드 받을때 자체적으로 금액 증가하므로 서버의 클라 금액만 증가
+                new UpdateUserAccount().giveUserIncome();
+                wait(4000);
 
             }
             if(ServerData.currentRound == 26){
-                ChatThread chatThread = new ChatThread("200/UserChat/아무도 조합을 완성하지 못해서 게임이 무승부로 끝났습니다!");
+                ChatThread chatThread = new ChatThread("200/UserChat/Server/아무도 조합을 완성하지 못해서 게임이 무승부로 끝났습니다!");
                 chatThread.start();
             }
             else{

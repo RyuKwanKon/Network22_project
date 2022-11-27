@@ -14,10 +14,12 @@ public class UserData {
     static int currentBidCost = 0;
     public static HashMap<String, Integer> userAccount = new HashMap<String, Integer>(4);
 
-    static String[] user1Deck = new String[26];
-    static String[] user2Deck = new String[26];
-    static String[] user3Deck = new String[26];
-    static String[] user4Deck = new String[26];
+    public static HashMap<String, String> userDeckList = new HashMap<String, String>(4);
+
+//    static String[] user1Deck = new String[26];
+//    static String[] user2Deck = new String[26];
+//    static String[] user3Deck = new String[26];
+//    static String[] user4Deck = new String[26];
 
     synchronized public void registerBid(String userName){
         if(this.userAccount.get(userName) > currentBidCost) {
