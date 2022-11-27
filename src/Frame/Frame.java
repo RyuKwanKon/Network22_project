@@ -30,10 +30,10 @@ public class Frame extends JFrame {
 
         contentPane.add(LoginPage);
         LoginPage.setVisible(true);
-        contentPane.add(gamePage);
-        gamePage.setVisible(false);
         contentPane.add(LodingPage);
         LodingPage.setVisible(false);
+        contentPane.add(gamePage);
+        gamePage.setVisible(false);
 
         client = new ClientConnect();
         client.connectServer();

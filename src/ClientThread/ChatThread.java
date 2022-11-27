@@ -27,10 +27,12 @@ public class ChatThread extends Thread {
     public void run() {
         try {
             String userName = Login.loginInput.getText();
-            System.out.println("send: " + userName + "/" + input.getText());
-            PrintWriter outMsg = new PrintWriter(socket.getOutputStream(), true);
-            outMsg.println("UserChat" + "/" + userName + "/" +input.getText());
-            //outMsg.flush();
+            if(!input.getText().equals("")) {
+                System.out.println("send: " + userName + "/" + input.getText());
+                PrintWriter outMsg = new PrintWriter(socket.getOutputStream(), true);
+                outMsg.println("UserChat" + "/" + userName + "/" + input.getText());
+                //outMsg.flush();
+            }
         } catch (Exception e) {
         }
     }

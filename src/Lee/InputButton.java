@@ -34,7 +34,9 @@ public class InputButton extends JButton{
                 try {
                     String userName = Login.loginInput.getText();
                     client.getOutMsg().println("userConnection/" + userName);
-                    //대기화면
+//                    LoginPage.setVisible(false);
+//                    LodingPage.setVisible(true);
+                    System.out.println("hi");
                     String response = client.getInMsg().readLine();
                     String[] splitMessage = response.split("/");
                     System.out.println(response);
@@ -44,10 +46,10 @@ public class InputButton extends JButton{
                             gamePage.setVisible(true);
                             gamePage.requestFocus();
                             for(int i = 0; i <= 3; i++){
-                                connectUser.add(new ConnectUser("User: " + splitMessage[4 + i]));
+                                connectUser.add(new ConnectUser("User: " + splitMessage[5 + i]));
                             }
-                            userData.userName = splitMessage[2];
-                            coin.setText(splitMessage[3]);
+                            userData.userName = splitMessage[3];
+                            coin.setText(splitMessage[4]);
                             Thread timer = new TimerThread(client.getSocket());
                             timer.start();
                     }

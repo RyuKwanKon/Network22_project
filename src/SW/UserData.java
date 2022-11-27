@@ -21,10 +21,10 @@ public class UserData {
 //    static String[] user3Deck = new String[26];
 //    static String[] user4Deck = new String[26];
 
-    synchronized public void registerBid(String userName){
-        if(this.userAccount.get(userName) > currentBidCost) {
-            this.currentBidUser = userName;
-            this.currentBidCost += 5;
+    public void registerBid(String userName){
+        if(UserData.userAccount.get(userName) > currentBidCost) {
+            UserData.currentBidUser = userName;
+            UserData.currentBidCost += 5;
             ChatThread chatThread = new ChatThread("200/RegisterBid/" + this.currentBidUser + "/" + this.currentBidCost);
             chatThread.start();
         }

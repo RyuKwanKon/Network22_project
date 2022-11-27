@@ -29,7 +29,6 @@ public class Server {
 //            service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);
             while (true) {
                 //4명의 유저를 받는다.
-
                 System.out.println("[Server] Wait until client come...");
                 if(socketCount == 4){
                     GameThread gameThread = new GameThread();
@@ -106,7 +105,6 @@ class ServerThread extends Thread {
                         userData.userAccount.put(splitMessage[1], 100);
                         userData.nameList.add(splitMessage[1]);
                         userData.userDeckList.put(splitMessage[1], "");
-
 //                        if (userData.count == 4) {
 //                            GameThread gameThread = new GameThread();
 //                            gameThread.start();
@@ -135,6 +133,7 @@ class ServerThread extends Thread {
                     }
                     break;
                     case "RegisterBid": {
+                        System.out.println("qwe");
                         if(ServerData.auctionState == false) break;
                         userData.registerBid(splitMessage[1]);
                         serverData.auctionRemainTime = 5;
@@ -215,16 +214,16 @@ class GameThread extends Thread {
                 }
                 ServerData.auctionState = false;
                 System.out.println(ServerData.currentRound + "라운드가 종료되었습니다");
-                ChatThread EndRound = new ChatThread("200/UserChat/Server" + ServerData.currentRound + "라운드가 종료되었습니다!");
+                ChatThread EndRound = new ChatThread("200/UserChat/Server/" + ServerData.currentRound + "라운드가 종료되었습니다!");
                 EndRound.start();
                 wait(1000);
-//                ChatThread chatThread;
-//                if(UserData.currentBidUser.equals("noBid")){
-//                    chatThread = new ChatThread("200/EndRound/NoBidding/아무도 응찰하지 않아 " + ServerData.currentCard + "는 유찰되었습니다!");
-//                }else{
-//                    chatThread = new ChatThread("200/EndRound/WinBidding/" + UserData.currentBidCost + "원을 입찰한 익명의 유저가 낙찰되었습니다!");
-//                }
-//                chatThread.start();
+                ChatThread chatThread;
+                if(UserData.currentBidUser.equals("noBid")){
+                    chatThread = new ChatThread("200/UserChat/Server/아무도 응찰하지 않아 " + ServerData.currentCard + "는 유찰되었습니다!");
+                }else{
+                    chatThread = new ChatThread("200/UserChat/Server/" + UserData.currentBidCost + "원을 입찰한 익명의 유저가 낙찰되었습니다!");
+                }
+                chatThread.start();
 
                 ServerData.usedCardList.add(ServerData.currentCard); // -- 3번
                 new AddCard(); // -- 1번
