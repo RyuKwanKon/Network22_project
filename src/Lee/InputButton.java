@@ -34,25 +34,14 @@ public class InputButton extends JButton{
                     String userName = Login.loginInput.getText();
                     client.getOutMsg().println("userConnection/" + userName);
                     change();
-                    String response = client.getInMsg().readLine();
-                    String[] splitMessage = response.split("/");
-                    System.out.println(response);
-                    if(splitMessage[0].equals("200")){
-                        if(splitMessage[1].equals("gameStart")) {
-                            MainFrame.LoadingPage.setVisible(false);
-                            MainFrame.gamePage.setVisible(true);
-                            MainFrame.gamePage.requestFocus();
-                            for (int i = 0; i <= 3; i++) {
-                                userData.userList.add(splitMessage[5 + i]);
-                                connectUser.add(new ConnectUser("User: " + splitMessage[5 + i]));
-                            }
-                            userData.userName = splitMessage[3];
-                            userData.coin = 100;
-                            coin.setText(splitMessage[4]);
-                            Thread timer = new TimerThread(client);
-                            timer.start();
-                        }
-                    }
+                    Thread timer = new TimerThread(client);
+                    timer.start();
+//                    String response = client.getInMsg().readLine();
+//                    String[] splitMessage = response.split("/");
+//                    System.out.println(response);
+//                    if(splitMessage[0].equals("200")){
+//
+//                    }
                 } catch (Exception ex) {
 //                    throw new RuntimeException(ex);
                 }

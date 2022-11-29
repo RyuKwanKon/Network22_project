@@ -20,18 +20,18 @@ public class Loding extends JPanel {
         setBounds(0, 0, 1280, 720);
         setLayout(null);
         setVisible(true);
-        add(new CurrentTitle(610, 210, "대"));
-        add(new CurrentTitle(630, 210, "기"));
-        add(new CurrentTitle(650, 210, "중"));
-        add(new CurrentTitle(670, 210, "."));
-        add(new CurrentTitle(690, 210, "."));
-        add(new CurrentTitle(710, 210, "."));
+        add(new CurrentTitle(600, 440, "대"));
+        add(new CurrentTitle(630, 440, "기"));
+        add(new CurrentTitle(660, 440, "중"));
+        add(new CurrentTitle(690, 440, "."));
+        add(new CurrentTitle(720, 440, "."));
+        add(new CurrentTitle(750, 440, "."));
         add(new GamePage());
     }
     class CurrentTitle extends JLabel{
         CurrentTitle(int x, int y, String title){
             setText(title);
-            setBounds(x, y, 50, 50);
+            setBounds(x, y, 70, 70);
             setFont(FontStyle.BidFont);
             setForeground(new Color(154, 254, 132));
         }

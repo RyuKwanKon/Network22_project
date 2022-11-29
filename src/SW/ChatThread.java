@@ -14,7 +14,6 @@ class ChatThread extends Thread {
 
     public synchronized void run() {
         if(message.length() >= 17){
-            System.out.println(message);
             for (Map.Entry<String, PrintWriter> elem : userData.userConnectionList.entrySet()) {
                 elem.getValue().println(message);
                 elem.getValue().flush();

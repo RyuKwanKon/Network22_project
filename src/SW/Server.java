@@ -71,7 +71,6 @@ class ServerThread extends Thread {
     private Socket socket = null;
     BufferedReader inFromClient = null;
     PrintWriter outToClient = null;
-
     String[] splitMessage = null;
     public ServerThread(Socket socket) {
         this.serverData = new ServerData();
@@ -101,7 +100,6 @@ class ServerThread extends Thread {
                 if (splitMessage[0].equals("end")) return;
                 switch (splitMessage[0]) {
                     case "userConnection": {
-                        System.out.println(splitMessage[1]);
                         userData.userConnectionList.put(splitMessage[1], outToClient);
                         userData.userAccount.put(splitMessage[1], 100);
                         userData.nameList.add(splitMessage[1]);
@@ -125,13 +123,11 @@ class ServerThread extends Thread {
                         for (int i = 2; i < splitMessage.length; i++) {
                             message += splitMessage[i];
                         }
-                        //for(String msg : splitMessage)
                         ChatThread chatThread = new ChatThread("200/UserChat/Chat/" + message);
                         chatThread.start();
                     }
                     break;
                     case "RegisterBid": {
-                        System.out.println("qwe");
                         if(ServerData.auctionState == false) break;
                         userData.registerBid(splitMessage[1]);
                         serverData.auctionRemainTime = 5;

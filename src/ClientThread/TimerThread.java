@@ -1,7 +1,6 @@
 package ClientThread;
 
 import Page.GamePagePanel.ConnectUser;
-import Page.GamePagePanel.ConnectUserPanel;
 import Page.GamePagePanel.UserChat;
 
 import java.awt.*;
@@ -9,13 +8,11 @@ import java.awt.*;
 import GameData.ClientUserData;
 import Page.GamePageView;
 
+import static Frame.MainFrame.*;
 import static Component.Data.cardInfo;
-import static Frame.MainFrame.client;
-import static Frame.MainFrame.gamePage;
 import static GameData.ClientUserData.changeCard;
 import static GameData.ClientUserData.currentCard;
-import static GameData.UserData.currentDack;
-import static GameData.UserData.remainCard;
+import static GameData.UserData.*;
 import static Page.GamePagePanel.ScrollChatting.vertical;
 import static Page.GamePageView.*;
 
@@ -42,6 +39,18 @@ public class TimerThread extends Thread{
                 if (splitMessage[0].equals("200")) {
                     if (splitMessage[1].equals("Timer")) {
                         timer(splitMessage[2]);
+                    }
+                    if(splitMessage[1].equals("gameStart")) {
+                        LoadingPage.setVisible(false);
+                        gamePage.setVisible(true);
+                        gamePage.requestFocus();
+                        for (int i = 0; i <= 3; i++) {
+                            userData.userList.add(splitMessage[5 + i]);
+                            connectUser.add(new ConnectUser("User: " + splitMessage[5 + i]));
+                        }
+                        userData.userName = splitMessage[3];
+                        userData.coin = 100;
+                        coin.setText(splitMessage[4]);
                     }
                     //200/UserChat/Chat/
                     //200/UserChat/Server/
