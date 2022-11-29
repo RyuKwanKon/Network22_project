@@ -20,7 +20,7 @@ public class Server {
         this.userData = new UserData();
     }
 
-    public void start() {
+    public synchronized void start() {
         ServerSocket serverSocket = null;
         Socket socket = null;
         try {
@@ -31,6 +31,9 @@ public class Server {
                 //4명의 유저를 받는다.
                 System.out.println("[Server] Wait until client come...");
                 if(socketCount == 4){
+                    while(UserData.count < 4){
+                        wait(1);
+                    }
                     GameThread gameThread = new GameThread();
                     gameThread.start();
                     //System.out.println("아니 왜 안켜지냐고 ㅡㅡ");
@@ -49,6 +52,8 @@ public class Server {
         } catch (IOException e) {
             System.out.println("[Server] User disconnection");
             //e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } finally {
             if (serverSocket != null) {
                 try {
@@ -201,12 +206,16 @@ class ServerThread extends Thread {
 class GameThread extends Thread {
     public synchronized void run() {
         System.out.println("GameStart");
-        ServerData.currentCard = new DrawRandomCard().randomCard();
-        ChatThread firstCardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
-        firstCardInfo.start();
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);  // 무조건 1초마다 남은시간 출력
+
         try {
+            wait(10);
+            ServerData.currentCard = new DrawRandomCard().randomCard();
+            ChatThread firstCardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
+            firstCardInfo.start();
+           // wait(10);
+            ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+            service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);  // 무조건 1초마다 남은시간 출력
+
             while (ServerData.currentRound <= 25) {
                 ServerData.currentRound++;
                 while(ServerData.auctionRemainTime > -1){
@@ -233,24 +242,20 @@ class GameThread extends Thread {
                 //new UpdateUserAccount().updateWinnerAccount(); // -- 4번
                 ServerData.currentCard = new DrawRandomCard().randomCard();   //새로운 카드 추가
                 ChatThread cardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
-                System.out.println(UserData.currentBidUser);
-                System.out.println(UserData.userDeckList);
 
-                if(UserData.currentBidCost != 0) {
-                    if (VictoryCondition.check() != 0) {
-                        chatThread = new ChatThread("200/UserChat/Server/12345축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
-                        chatThread.start();
-                        GameThread.sleep(2000);
-                        GameThread.interrupted();
-
-                    }
-                }
+//                if(UserData.currentBidCost != 0) {
+//                    if (VictoryCondition.check(UserData.userDeckList) != 0) {
+//                        chatThread = new ChatThread("200/UserChat/Server/12345축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
+//                        chatThread.start();
+//                    }
+//                }
 
 
                 UserData.currentBidCost = 0;    // 입찰가 초기화
                 UserData.currentBidUser = "noBid";  // 입찰자 초기화
                 ServerData.auctionRemainTime = 5;   // 경매 카운트다운 초기화
                 ServerData.auctionState = true; // 다음 라운드시 입찰할 수 있게
+
                 // 1 -- 유저 덱리스트에 카드 추가
                 // 2 -- 낙찰된 유저에서 낙찰 메시지 출력 O
                 // 3 -- 카드 중복 안되게 유저 카드 리스트에 카드 추가 O
@@ -265,7 +270,7 @@ class GameThread extends Thread {
 
                 // -- 8번인데 클라이언트에서 다음 라운드 카드 받을때 자체적으로 금액 증가하므로 서버의 클라 금액만 증가
                 new UpdateUserAccount().giveUserIncome();
-                wait(4000);
+                wait(1000);
 
             }
             if(ServerData.currentRound == 26){
