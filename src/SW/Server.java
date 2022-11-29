@@ -233,14 +233,18 @@ class GameThread extends Thread {
                 //new UpdateUserAccount().updateWinnerAccount(); // -- 4번
                 ServerData.currentCard = new DrawRandomCard().randomCard();   //새로운 카드 추가
                 ChatThread cardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
+                System.out.println(UserData.currentBidUser);
+                System.out.println(UserData.userDeckList);
 
-//                if(UserData.currentBidCost != 0) {
-//                    if (VictoryCondition.check(UserData.userDeckList) != 0) {
-//                        chatThread = new ChatThread("200/UserChat/Server/12345축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
-//                        chatThread.start();
-//
-//                    }
-//                }
+                if(UserData.currentBidCost != 0) {
+                    if (VictoryCondition.check() != 0) {
+                        chatThread = new ChatThread("200/UserChat/Server/12345축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
+                        chatThread.start();
+                        GameThread.sleep(2000);
+                        GameThread.interrupted();
+
+                    }
+                }
 
 
                 UserData.currentBidCost = 0;    // 입찰가 초기화
