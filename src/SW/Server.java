@@ -144,6 +144,11 @@ class ServerThread extends Thread {
                         serverData.auctionRemainTime = 5;
                         break;
                     }
+                    case "Finish": {
+                        new DeleteUserInfo(splitMessage[1]);
+                        ServerData.usedCardList.clear();;
+                        return;
+                    }
 //                    break;
 //                    case "successBid": {
 //                        //[Server -> Client] Thread도 있어야 할 것 같은데 모르겠다
@@ -195,6 +200,7 @@ class ServerThread extends Thread {
             System.out.println("[" + requestUserName + " terminate connection]");
         } catch (IOException e) {
             System.out.println("[Server] User " + splitMessage[1] + " is disconnected");
+            new DeleteUserInfo(splitMessage[1]);
             // User disconnected - 유저 정보 삭제해야함
             //e.printStackTrace();
         } catch (InterruptedException e) {
@@ -246,6 +252,8 @@ class GameThread extends Thread {
                         if (VictoryCondition.check() != 0) {
                             chatThread = new ChatThread("200/UserChat/Server/축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
                             chatThread.start();
+                            ChatThread end = new ChatThread("200/UserChat/Server/Finish");
+                            end.start();
                             break;
                         }
                     }
@@ -279,6 +287,8 @@ class GameThread extends Thread {
             if (ServerData.currentRound == 26) {
                 ChatThread chatThread = new ChatThread("200/UserChat/Server/아무도 조합을 완성하지 못해서 게임이 무승부로 끝났습니다!");
                 chatThread.start();
+                ChatThread end = new ChatThread("200/UserChat/Server/Finish");
+                end.start();
             }
 
         } catch (InterruptedException e) {
