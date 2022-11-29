@@ -13,7 +13,6 @@ public class UserData {
     static String currentBidUser = "noBid";
     static int currentBidCost = 0;
     public static HashMap<String, Integer> userAccount = new HashMap<String, Integer>(4);
-
     public static HashMap<String, String> userDeckList = new HashMap<String, String>(4);
 
 //    static String[] user1Deck = new String[26];

@@ -246,18 +246,20 @@ class GameThread extends Thread {
 
                 ServerData.usedCardList.add(ServerData.currentCard); // -- 3번
                 new AddCard(); // -- 1번
+                if(UserData.currentBidCost != 0) { //승리 조건 체크해서 승리자 있으면 승리메세지 출력, 스레드 종료
+                    if (VictoryCondition.check() != 0) {
+                        chatThread = new ChatThread("200/UserChat/Server/축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
+                        chatThread.start();
+                    }
+                }
+
                 new EndRoundMessage(); // -- 2번
                 //UpdateUserAccount 에서 에러발생함 - 한번 낙찰받으면 다음에 낙찰이 안됨
                 //new UpdateUserAccount().updateWinnerAccount(); // -- 4번
                 ServerData.currentCard = new DrawRandomCard().randomCard();   //새로운 카드 추가
                 ChatThread cardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
 
-//                if(UserData.currentBidCost != 0) {
-//                    if (VictoryCondition.check(UserData.userDeckList) != 0) {
-//                        chatThread = new ChatThread("200/UserChat/Server/12345축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
-//                        chatThread.start();
-//                    }
-//                }
+
 
 
                 UserData.currentBidCost = 0;    // 입찰가 초기화

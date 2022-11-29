@@ -12,7 +12,7 @@ public class VictoryCondition {
             return 0;
         String[] deck = value.split("/");
         String[] hand = new String[25];
-        System.out.println(value);
+
         for (int i = 0; i < 25; i++)
             hand[i] = null;
 
