@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 public class Server {
     private UserData userData;
-    public int socketCount = 0;
     public static void main(String[] args) {
         Server server = new Server();
         server.start();
@@ -30,7 +29,7 @@ public class Server {
             while (true) {
                 //4명의 유저를 받는다.
                 System.out.println("[Server] Wait until client come...");
-                if(socketCount == 4){   // 이거 말고 소켓은 무한대로 받아도 되고 그냥 Userdata.count == 4일떄 게임 쓰레드 시작하게
+                if(UserData.socketCount == 4){   // 이거 말고 소켓은 무한대로 받아도 되고 그냥 Userdata.count == 4일떄 게임 쓰레드 시작하게
                     while(UserData.count < 4){
                         wait(1);
                     }
@@ -46,7 +45,7 @@ public class Server {
                 }
                 ServerThread serverthread = new ServerThread(socket);
                 serverthread.start();
-                socketCount++;
+                UserData.socketCount++;
 
             }
         } catch (IOException e) {
@@ -146,7 +145,6 @@ class ServerThread extends Thread {
                     }
                     case "Finish": {
                         new DeleteUserInfo(splitMessage[1]);
-                        ServerData.usedCardList.clear();;
                         return;
                     }
 //                    break;
@@ -232,6 +230,7 @@ class GameThread extends Thread {
                 }
                 ServerData.auctionState = false;
                 if (ServerData.currentRound != 0) {
+                    new UpdateUserAccount().giveUserIncome();
                     System.out.println(ServerData.currentRound + "라운드가 종료되었습니다");
 
                     ChatThread EndRound = new ChatThread("200/UserChat/Server/" + ServerData.currentRound + "라운드가 종료되었습니다!");
@@ -254,11 +253,13 @@ class GameThread extends Thread {
                             chatThread.start();
                             ChatThread end = new ChatThread("200/UserChat/Server/Finish");
                             end.start();
-                            break;
+                            ServerData.usedCardList.clear();
+                            UserData.count = 0;
+                            UserData.socketCount = 0;
+                            return;
                         }
                     }
 
-                    new UpdateUserAccount().giveUserIncome();
                 }
                 //UpdateUserAccount 에서 에러발생함 - 한번 낙찰받으면 다음에 낙찰이 안됨
                 //new UpdateUserAccount().updateWinnerAccount(); // -- 4번
@@ -289,6 +290,10 @@ class GameThread extends Thread {
                 chatThread.start();
                 ChatThread end = new ChatThread("200/UserChat/Server/Finish");
                 end.start();
+                UserData.count = 0;
+                UserData.socketCount = 0;
+                ServerData.usedCardList.clear();
+                return;
             }
 
         } catch (InterruptedException e) {

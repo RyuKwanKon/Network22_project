@@ -18,7 +18,7 @@ public class Alarm extends JLabel {
         setLayout(null);
         setBounds(480, 50, 800, 50);
         setBackground(background);
-        setText("상품" + Data.cardInfo[randTitle - 65] + Data.cardInfoNumber.get(randNumber) +"원"); // + " - 금액: " + String.format("%01d", startPrice) + "원");
+        setText("---- waiting game ----"); // + " - 금액: " + String.format("%01d", startPrice) + "원");
         setFont(font);
         setForeground(fontColor);
     }

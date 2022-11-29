@@ -25,6 +25,8 @@ public class ServerTime implements Runnable{
                 serverData.auctionRemainTime--;
                 }
             }
+            if(UserData.count == 0)
+                return;
         }catch(Exception e){}
     }
 

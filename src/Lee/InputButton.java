@@ -46,8 +46,9 @@ public class InputButton extends JButton{
                                 connectUser.add(new ConnectUser("User: " + splitMessage[5 + i]));
                             }
                             userData.userName = splitMessage[3];
+                            userData.coin = 100;
                             coin.setText(splitMessage[4]);
-                            Thread timer = new TimerThread(client.getSocket());
+                            Thread timer = new TimerThread(client);
                             timer.start();
                         }
                     }

@@ -26,4 +26,11 @@ public class ClientConnect {
     public Socket getSocket(){
         return socket;
     }
+    public void endSocket(){
+        try{
+            this.inMsg.close();
+            this.outMsg.close();
+            this.socket.close();
+        }catch (Exception e){}
+    }
 }

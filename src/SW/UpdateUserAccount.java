@@ -26,11 +26,5 @@ public class UpdateUserAccount {
         for(String name : UserData.userAccount.keySet()){
             UserData.userAccount.put(name, UserData.userAccount.get(name) + 10);
         }
-                for(Map.Entry<String, PrintWriter> elem : UserData.userConnectionList.entrySet()){
-            if(UserData.currentBidUser.equals(elem.getKey())){
-                elem.getValue().println("200/EndRound/WinBidding/" + String.valueOf(money));
-                elem.getValue().flush();
-            }
-        }
     }
 }

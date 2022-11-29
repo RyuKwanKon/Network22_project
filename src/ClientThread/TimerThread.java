@@ -15,24 +15,32 @@ import Page.GamePageView;
 
 import static Component.Data.cardInfo;
 import static Frame.MainFrame.client;
+import static GameData.ClientUserData.changeCard;
 import static GameData.ClientUserData.currentCard;
 import static GameData.UserData.currentDack;
 import static GameData.UserData.remainCard;
+import static Page.GamePagePanel.OnChat.input;
 import static Page.GamePagePanel.ScrollChatting.vertical;
 import static Page.GamePageView.*;
 
 public class TimerThread extends Thread{
-    Socket socket = null;
+    private boolean finish = false;
+    ClientConnect connect = null;
     private ClientUserData userData;
 
-    public TimerThread( Socket socket) {
-        this.socket = socket;
+    public TimerThread(ClientConnect connect) {
+        this.connect = connect;
         this.userData = new ClientUserData();
     }
     @Override
     public void run() {
         try {
             while(true) {
+                if(finish){
+                    System.out.println("end");
+                    connect.endSocket();
+                    return;
+                }
                 String response = client.getInMsg().readLine();
                 System.out.println(response);
                 String[] splitMessage = response.split("/");
@@ -79,7 +87,15 @@ public class TimerThread extends Thread{
         timerNum.setText(currentTimer);
     }
     synchronized public void userChat(String typeMessage, String messageContent){
-        if(typeMessage.equals("Server"))  currentChatting.add(new UserChat(messageContent, new Color(154, 254, 132)));
+        if(typeMessage.equals("Server")){
+            if(messageContent.equals("Finish")){
+                connect.getOutMsg().println("Finish/" + userData.userName );
+                alarm.setText("-------- End Game --------");
+                finish = true;
+                return;
+            }
+            currentChatting.add(new UserChat(messageContent, new Color(154, 254, 132)));
+        }
         else currentChatting.add(new UserChat(messageContent, new Color(132, 167, 254)));
         vertical.setValue(vertical.getMaximum());
     }
@@ -88,20 +104,12 @@ public class TimerThread extends Thread{
         alarm.setText("상품 " + currentCard + " - 현재 금액: " + userData.userBid + "원"); // 상품 + 가격만, 입찰은 비밀
     }
     synchronized public void currentCard(String typeCard){
-        try {
-            int title = (int)typeCard.charAt(0);
-            String number = typeCard.substring(1);
-            String current = cardInfo[title- 65] + number;
-            currentCard = current;
-            BufferedImage tempImg = null;
-            tempImg = ImageIO.read(new File("./assets/Card/" + typeCard + ".png"));
-            ImageIcon temp_img = new ImageIcon(tempImg);
-            Image t = temp_img.getImage().getScaledInstance(141, 200, Image.SCALE_SMOOTH);
-            CenterCard.setIcon(new ImageIcon(t));
-            alarm.setText("상품 " + current + " - 현재 금액: 0원"); // 상품 + 가격만, 입찰은 비밀
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        int title = (int)typeCard.charAt(0);
+        String number = typeCard.substring(1);
+        String current = cardInfo[title- 65] + number;
+        currentCard = current;
+        changeCard(typeCard);
+        alarm.setText("상품 " + current + " - 현재 금액: 0원"); // 상품 + 가격만, 입찰은 비밀
     }
     synchronized public void endRound(String typeMessage, String currentCoin, String card){
         if(card == null) return;
