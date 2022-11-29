@@ -146,20 +146,30 @@ class ServerThread extends Thread {
                 }
             }
             System.out.println("[" + requestUserName + " terminate connection]");
-        }catch (NullPointerException e){
-            System.out.println("[Server] User " + splitMessage[1] + " is disconnected");
-            DeleteUserInfo.deleteUserInfo(splitMessage[1]);
-            ChatThread chatThread = new ChatThread("300/Disconnect/" + splitMessage[1]);
-            chatThread.start();
+        } catch (NullPointerException e){
+            disconnect(splitMessage[1]);
+            if(userData.nameList.size() == 1) endProgram(userData.nameList.get(0));
         } catch (IOException e) {
-            System.out.println("1[Server] User " + splitMessage[1] + " is disconnected");
-            DeleteUserInfo.deleteUserInfo(splitMessage[1]);
-            ChatThread chatThread = new ChatThread("300/Disconnect/" + splitMessage[1]);
-            chatThread.start();
+            disconnect(splitMessage[1]);
+            if(userData.nameList.size() == 1) endProgram(userData.nameList.get(0));
         } catch (InterruptedException e) {
             e.printStackTrace();
             System.out.println("error1");
         }
+    }
+    synchronized public void disconnect(String name){
+        System.out.println("[Server] User " + name + " is disconnected");
+        DeleteUserInfo.deleteUserInfo(name);
+        ChatThread chatThread = new ChatThread("200/userChat/\"" + name + "\"님이 탈주하셨습니다.");
+        chatThread.start();
+        chatThread = new ChatThread("300/Disconnect/" + name);
+        chatThread.start();
+    }
+    synchronized public void endProgram(String name){
+        ChatThread chatThread = new ChatThread("200/UserChat/Server/\""+name+"\"님이 승리하셨습니다.");
+        chatThread.start();
+        chatThread = new ChatThread("200/UserChat/Server/Finish");
+        chatThread.start();
     }
 }
 
@@ -187,7 +197,6 @@ class GameThread extends Thread {
                     wait(1000);
                     ChatThread chatThread;
                     if (UserData.currentBidUser.equals("noBid")) {
-                        // chatThread = new ChatThread("200/UserChat/Server/아무도 응찰하지 않아 " + ServerData.currentCard + "는 유찰되었습니다!");
                         NoneBidding.noneBidding();
                     } else {
                         chatThread = new ChatThread("200/UserChat/Server/" + UserData.currentBidCost + "원을 입찰한 익명의 유저가 낙찰되었습니다!");
@@ -239,7 +248,7 @@ class GameThread extends Thread {
                 wait(1000);
             }
             if (ServerData.currentRound == 26) {
-                ChatThread chatThread = new ChatThread("200/UserChat/Server/아무도 조합을 완성하지 못해서 게임이 무승부로 끝났습니다!");
+                ChatThread chatThread = new ChatThread("200/UserChat/Server/게임이 무승부로 끝났습니다!");
                 chatThread.start();
                 ChatThread end = new ChatThread("200/UserChat/Server/Finish");
                 end.start();

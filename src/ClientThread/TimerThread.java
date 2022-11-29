@@ -11,6 +11,7 @@ import Page.GamePageView;
 
 import static Component.Data.cardInfo;
 import static Frame.MainFrame.client;
+import static Frame.MainFrame.gamePage;
 import static GameData.ClientUserData.changeCard;
 import static GameData.ClientUserData.currentCard;
 import static GameData.UserData.currentDack;
@@ -71,7 +72,7 @@ public class TimerThread extends Thread{
             }
         } catch (Exception e) {}
     }
-    public void timer(String currentTimer){
+    synchronized public void timer(String currentTimer){
         if(currentTimer.equals("0")){
             button.setEnabled(false);
             button.setText("Wait");
@@ -81,11 +82,11 @@ public class TimerThread extends Thread{
         }
         timerNum.setText(currentTimer);
     }
-    public void userChat(String typeMessage, String messageContent){
+    synchronized public void userChat(String typeMessage, String messageContent){
         if(typeMessage.equals("Server")){
             if(messageContent.equals("Finish")){
                 connect.getOutMsg().println("Finish/" + userData.userName );
-                alarm.setText("-------- End Game --------");
+                alarm.setText("--------- End Game ---------");
                 finish = true;
                 return;
             }
@@ -94,11 +95,11 @@ public class TimerThread extends Thread{
         else currentChatting.add(new UserChat(messageContent, new Color(132, 167, 254)));
         vertical.setValue(vertical.getMaximum());
     }
-    public void registerBid(String currentBidCost){
+    synchronized public void registerBid(String currentBidCost){
         userData.userBid = Integer.parseInt(currentBidCost);
         alarm.setText("상품 " + currentCard + " - 현재 금액: " + userData.userBid + "원"); // 상품 + 가격만, 입찰은 비밀
     }
-    public void currentCard(String typeCard){
+    synchronized public void currentCard(String typeCard){
         int title = (int)typeCard.charAt(0);
         String number = typeCard.substring(1);
         String current = cardInfo[title- 65] + number;
@@ -106,7 +107,7 @@ public class TimerThread extends Thread{
         changeCard(typeCard);
         alarm.setText("상품 " + current + " - 현재 금액: 0원"); // 상품 + 가격만, 입찰은 비밀
     }
-    public void endRound(String typeMessage, String currentCoin, String card){
+    synchronized public void endRound(String typeMessage, String currentCoin, String card){
         if(card == null) return;
         userData.coin = Integer.parseInt(currentCoin);
         coin.setText(String.valueOf(userData.coin));
@@ -122,15 +123,14 @@ public class TimerThread extends Thread{
         remainCard[(title - 65)*13 + (number - 1)] = 1;
         GamePageView.card[(title - 65)*13 + (number - 1)].setVisible(false);
     }
-    public void disconnect(String name){
-        System.out.println(userData.userList);
+    synchronized public void disconnect(String name){
         int getIdx = userData.userList.indexOf(name);
-        System.out.println(getIdx);
         userData.userList.remove(getIdx);
-        connectUser = new ConnectUserPanel();
+        connectUser.removeAll();
         for (String n : userData.userList) {
             connectUser.add(new ConnectUser("User: " + n));
-//            System.out.println(n);
         }
+        connectUser.revalidate();
+        connectUser.repaint(20, 10, 200, 200);
     }
 }
