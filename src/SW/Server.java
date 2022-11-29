@@ -2,14 +2,13 @@ package SW;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
 public class Server {
     private UserData userData;
+    ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
     public static void main(String[] args) {
         Server server = new Server();
         server.start();
@@ -24,8 +23,7 @@ public class Server {
         Socket socket = null;
         try {
             serverSocket = new ServerSocket(1111);
-//            ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-//            service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);
+            service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);
             while (true) {
                 //4명의 유저를 받는다.
                 System.out.println("[Server] Wait until client come...");
@@ -33,9 +31,9 @@ public class Server {
                     while(UserData.count < 4){
                         wait(1);
                     }
+                    ServerData.auctionRemainTime = 5;
                     GameThread gameThread = new GameThread();
                     gameThread.start();
-                    //System.out.println("아니 왜 안켜지냐고 ㅡㅡ");
                 }
                 socket = serverSocket.accept();
                 System.out.println("[server] New client connected");
@@ -46,7 +44,6 @@ public class Server {
                 ServerThread serverthread = new ServerThread(socket);
                 serverthread.start();
                 UserData.socketCount++;
-
             }
         } catch (IOException e) {
             System.out.println("[Server] User disconnection");
@@ -57,6 +54,7 @@ public class Server {
             if (serverSocket != null) {
                 try {
                     serverSocket.close();
+                    service.shutdown();
                     System.out.println("[Server] Server closed");
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -99,21 +97,16 @@ class ServerThread extends Thread {
                 System.out.println(requestMessage);
                 splitMessage = requestMessage.split("/");
                 requestUserName = splitMessage[1];
-                // userConnection/류관곤/현재 금액/입찰 금액/
+
                 if (splitMessage[0].equals("end")) return;
                 switch (splitMessage[0]) {
                     case "userConnection": {
-                        userData.count++;
                         System.out.println(splitMessage[1]);
                         userData.userConnectionList.put(splitMessage[1], outToClient);
                         userData.userAccount.put(splitMessage[1], 100);
                         userData.nameList.add(splitMessage[1]);
                         userData.userDeckList.put(splitMessage[1], "");
-//                        if (userData.count == 4) {
-//                            GameThread gameThread = new GameThread();
-//                            gameThread.start();
-//                            System.out.println("아니 왜 안켜지냐고 ㅡㅡ");
-//                        }
+                        userData.count++;
                         while (userData.count < 4) {
                             wait(1);
                         }
@@ -124,6 +117,7 @@ class ServerThread extends Thread {
                         }
                         outToClient.println("200/gameStart/Server/" + splitMessage[1] + "/100" + userNameList);
                         outToClient.flush();
+                        wait(500);
                     }
                     break;
                     case "UserChat": {
@@ -144,65 +138,27 @@ class ServerThread extends Thread {
                         break;
                     }
                     case "Finish": {
-                        new DeleteUserInfo(splitMessage[1]);
+                        DeleteUserInfo.deleteUserInfo(splitMessage[1]);
                         return;
                     }
-//                    break;
-//                    case "successBid": {
-//                        //[Server -> Client] Thread도 있어야 할 것 같은데 모르겠다
-//                        //낙찰/유저이름/트럼프카드/금액
-//                        //낙찰된 유저의 출력 스트림 & 이름 저장
-////                            PrintWriter dataToClient = null;
-////                            for(Map.Entry<PrintWriter, String> entry: userConnectionList.entrySet()){
-////                                if(entry.getValue().equals(splitMessage[1])){
-////                                    dataToClient = entry.getKey();
-////                                }
-////                            }
-//                        // 낙찰된 유저에게 낙찰 메시지 전송
-////                            dataToClient.println("낙찰");
-////                            dataToClient.flush();
-//                        outToClient.println("낙찰");
-//                        outToClient.flush();
-//                        // 모든 유저들에게 낙찰 공지
-//                        ChatThread chatThread = new ChatThread("익명의 참가자가" + splitMessage[3] +
-//                                "원으로" + splitMessage[2] + "를 낙찰받았습니다!");
-//                        chatThread.start();
-//                    }
-//                    case "noBid": {
-//                        //아무도 입찰 안함
-//                        ChatThread chatThread = new ChatThread("아무도 응찰하지 않아" + splitMessage[2] + "는 유찰되었습니다!");
-//                        chatThread.start();
-//                    }
-//                    case "win": {
-//                        // 조합 완성시에
-//                        // win/유저이름
-////                            PrintWriter dataToClient = null;
-////                            for(Map.Entry<PrintWriter, String> entry: userConnectionList.entrySet()){
-////                                if(entry.getValue().equals(splitMessage[1])){
-////                                    dataToClient = entry.getKey();
-////                                }
-////                            }
-//                        outToClient.println("승리");
-//                        outToClient.flush();
-////                            dataToClient.println("승리");
-////                            dataToClient.flush();
-//
-//                        ChatThread chatThread = new ChatThread("참가자" + splitMessage[1] + "" +
-//                                "이(가) 가장 먼저 조합을 완성해 우승하였습니다!");
-//                        chatThread.start();
-//                    }
                     default:
                         break;
                 }
             }
             System.out.println("[" + requestUserName + " terminate connection]");
-        } catch (IOException e) {
+        }catch (NullPointerException e){
             System.out.println("[Server] User " + splitMessage[1] + " is disconnected");
-            new DeleteUserInfo(splitMessage[1]);
-            // User disconnected - 유저 정보 삭제해야함
-            //e.printStackTrace();
+            DeleteUserInfo.deleteUserInfo(splitMessage[1]);
+            ChatThread chatThread = new ChatThread("300/Disconnect/" + splitMessage[1]);
+            chatThread.start();
+        } catch (IOException e) {
+            System.out.println("1[Server] User " + splitMessage[1] + " is disconnected");
+            DeleteUserInfo.deleteUserInfo(splitMessage[1]);
+            ChatThread chatThread = new ChatThread("300/Disconnect/" + splitMessage[1]);
+            chatThread.start();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            System.out.println("error1");
         }
     }
 }
@@ -214,16 +170,9 @@ class GameThread extends Thread {
         System.out.println("GameStart");
 
         try {
-//            while(UserData.count < 4){
-//                wait(1);
-//            }
-//            ServerData.currentCard = new DrawRandomCard().randomCard();
-//            ChatThread firstCardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
-//            firstCardInfo.start();
-            // wait(10);
-            ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-            service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);  // 무조건 1초마다 남은시간 출력
-
+//            ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+//            service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);  // 무조건 1초마다 남은시간 출력
+            wait(500);
             while (ServerData.currentRound <= 25) {
                 while (ServerData.auctionRemainTime > -1) {
                     wait(1);
@@ -239,11 +188,11 @@ class GameThread extends Thread {
                     ChatThread chatThread;
                     if (UserData.currentBidUser.equals("noBid")) {
                         // chatThread = new ChatThread("200/UserChat/Server/아무도 응찰하지 않아 " + ServerData.currentCard + "는 유찰되었습니다!");
-                        new NoneBidding();
+                        NoneBidding.noneBidding();
                     } else {
                         chatThread = new ChatThread("200/UserChat/Server/" + UserData.currentBidCost + "원을 입찰한 익명의 유저가 낙찰되었습니다!");
                         chatThread.start();
-                        new EndRoundMessage(); // -- 2번
+                        EndRoundMessage.EndRoundMessage(); // -- 2번
                     }
                     ServerData.usedCardList.add(ServerData.currentCard); // -- 3번
                     new AddCard(); // -- 1번
@@ -256,10 +205,14 @@ class GameThread extends Thread {
                             ServerData.usedCardList.clear();
                             UserData.count = 0;
                             UserData.socketCount = 0;
+                            ServerData.currentRound = 0;
+                            UserData.currentBidCost = 0;    // 입찰가 초기화
+                            UserData.currentBidUser = "noBid";  // 입찰자 초기화
+                            ServerData.auctionRemainTime = 5;   // 경매 카운트다운 초기화
+                            ServerData.auctionState = true; // 다음 라운드시 입찰할 수 있게
                             return;
                         }
                     }
-
                 }
                 //UpdateUserAccount 에서 에러발생함 - 한번 낙찰받으면 다음에 낙찰이 안됨
                 //new UpdateUserAccount().updateWinnerAccount(); // -- 4번
@@ -292,10 +245,13 @@ class GameThread extends Thread {
                 end.start();
                 UserData.count = 0;
                 UserData.socketCount = 0;
+                ServerData.currentRound = 0;
+                UserData.currentBidCost = 0;    // 입찰가 초기화
+                UserData.currentBidUser = "noBid";  // 입찰자 초기화
+                ServerData.auctionRemainTime = 5;   // 경매 카운트다운 초기화
+                ServerData.auctionState = true; // 다음 라운드시 입찰할 수 있게
                 ServerData.usedCardList.clear();
-                return;
             }
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

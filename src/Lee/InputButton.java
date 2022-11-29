@@ -43,6 +43,7 @@ public class InputButton extends JButton{
                             MainFrame.gamePage.setVisible(true);
                             MainFrame.gamePage.requestFocus();
                             for (int i = 0; i <= 3; i++) {
+                                userData.userList.add(splitMessage[5 + i]);
                                 connectUser.add(new ConnectUser("User: " + splitMessage[5 + i]));
                             }
                             userData.userName = splitMessage[3];

@@ -12,7 +12,7 @@ class ChatThread extends Thread {
         this.message = message;
     }
 
-    public void run() {
+    public synchronized void run() {
         if(message.length() >= 17){
             System.out.println(message);
             for (Map.Entry<String, PrintWriter> elem : userData.userConnectionList.entrySet()) {

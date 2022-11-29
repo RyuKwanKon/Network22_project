@@ -1,14 +1,10 @@
 package ClientThread;
 
+import Page.GamePagePanel.ConnectUser;
+import Page.GamePagePanel.ConnectUserPanel;
 import Page.GamePagePanel.UserChat;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.Socket;
 
 import GameData.ClientUserData;
 import Page.GamePageView;
@@ -19,7 +15,6 @@ import static GameData.ClientUserData.changeCard;
 import static GameData.ClientUserData.currentCard;
 import static GameData.UserData.currentDack;
 import static GameData.UserData.remainCard;
-import static Page.GamePagePanel.OnChat.input;
 import static Page.GamePagePanel.ScrollChatting.vertical;
 import static Page.GamePageView.*;
 
@@ -27,7 +22,6 @@ public class TimerThread extends Thread{
     private boolean finish = false;
     ClientConnect connect = null;
     private ClientUserData userData;
-
     public TimerThread(ClientConnect connect) {
         this.connect = connect;
         this.userData = new ClientUserData();
@@ -69,14 +63,15 @@ public class TimerThread extends Thread{
                     else if(splitMessage[1].equals("EndRound")){
                         endRound(splitMessage[2], splitMessage[4], splitMessage[5]);
                     }
-                    //게임 끝
-                    //메세지 합치기
-                    //nonBidding 요청안옴
+                }else if(splitMessage[0].equals("300")){
+                    if(splitMessage[1].equals("Disconnect")){
+                        disconnect(splitMessage[2]);
+                    }
                 }
             }
         } catch (Exception e) {}
     }
-    synchronized public void timer(String currentTimer){
+    public void timer(String currentTimer){
         if(currentTimer.equals("0")){
             button.setEnabled(false);
             button.setText("Wait");
@@ -86,7 +81,7 @@ public class TimerThread extends Thread{
         }
         timerNum.setText(currentTimer);
     }
-    synchronized public void userChat(String typeMessage, String messageContent){
+    public void userChat(String typeMessage, String messageContent){
         if(typeMessage.equals("Server")){
             if(messageContent.equals("Finish")){
                 connect.getOutMsg().println("Finish/" + userData.userName );
@@ -99,11 +94,11 @@ public class TimerThread extends Thread{
         else currentChatting.add(new UserChat(messageContent, new Color(132, 167, 254)));
         vertical.setValue(vertical.getMaximum());
     }
-    synchronized public void registerBid(String currentBidCost){
+    public void registerBid(String currentBidCost){
         userData.userBid = Integer.parseInt(currentBidCost);
         alarm.setText("상품 " + currentCard + " - 현재 금액: " + userData.userBid + "원"); // 상품 + 가격만, 입찰은 비밀
     }
-    synchronized public void currentCard(String typeCard){
+    public void currentCard(String typeCard){
         int title = (int)typeCard.charAt(0);
         String number = typeCard.substring(1);
         String current = cardInfo[title- 65] + number;
@@ -111,7 +106,7 @@ public class TimerThread extends Thread{
         changeCard(typeCard);
         alarm.setText("상품 " + current + " - 현재 금액: 0원"); // 상품 + 가격만, 입찰은 비밀
     }
-    synchronized public void endRound(String typeMessage, String currentCoin, String card){
+    public void endRound(String typeMessage, String currentCoin, String card){
         if(card == null) return;
         userData.coin = Integer.parseInt(currentCoin);
         coin.setText(String.valueOf(userData.coin));
@@ -126,5 +121,16 @@ public class TimerThread extends Thread{
         //String current = cardInfo[title- 65] + String.valueOf(number);
         remainCard[(title - 65)*13 + (number - 1)] = 1;
         GamePageView.card[(title - 65)*13 + (number - 1)].setVisible(false);
+    }
+    public void disconnect(String name){
+        System.out.println(userData.userList);
+        int getIdx = userData.userList.indexOf(name);
+        System.out.println(getIdx);
+        userData.userList.remove(getIdx);
+        connectUser = new ConnectUserPanel();
+        for (String n : userData.userList) {
+            connectUser.add(new ConnectUser("User: " + n));
+//            System.out.println(n);
+        }
     }
 }

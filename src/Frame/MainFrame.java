@@ -13,8 +13,10 @@ public class MainFrame extends JFrame {
     public static JPanel LoginPage = new Login();
     public static JPanel LoadingPage = new Loding();
     public MainFrame() {
-        setTitle("auction poker");
+        setTitle("Auction poker");
         setSize(1280, 720);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
         Color background = new Color(249, 249, 249);
 
         Container contentPane = getContentPane();

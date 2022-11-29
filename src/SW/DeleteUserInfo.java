@@ -1,8 +1,7 @@
 package SW;
 
 public class DeleteUserInfo {
-
-    public DeleteUserInfo(String userName) {
+    synchronized public static void deleteUserInfo(String userName) {
         UserData.nameList.remove(userName);
         UserData.userBiddingInfo.remove(userName);
         UserData.userConnectionList.remove(userName);

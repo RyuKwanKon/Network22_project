@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 import static Component.Data.cardInfo;
 import static Page.GamePageView.CenterCard;
@@ -16,6 +18,7 @@ public class ClientUserData {
     public static int coin;
     public static int userBid;
     public static String currentCard = "wait";
+    public static LinkedList<String> userList = new LinkedList<String>();
 
     public static void changeCard(String typeCard){
         try {
