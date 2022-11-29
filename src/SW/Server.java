@@ -198,9 +198,9 @@ class ServerThread extends Thread {
             System.out.println("[" + requestUserName + " terminate connection]");
         } catch (IOException e) {
             System.out.println("[Server] User " + splitMessage[1] + " is disconnected");
-            ChatThread chatThread = new ChatThread("300/UserChat/Serve/r" + splitMessage[1]);
+            ChatThread chatThread = new ChatThread("300/Server/" + splitMessage[1]);
             chatThread.start();
-
+            new DeleteUserInfo(splitMessage[1]);
             // User disconnected - 유저 정보 삭제해야함
             //e.printStackTrace();
         } catch (InterruptedException e) {
@@ -225,9 +225,12 @@ class GameThread extends Thread {
             service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);  // 무조건 1초마다 남은시간 출력
 
             while (ServerData.currentRound <= 25) {
-                ServerData.currentRound++;
                 while(ServerData.auctionRemainTime > -1){
                     wait(1);
+                }
+                if(ServerData.currentRound == 0){
+                    ServerData.currentRound++;
+                    continue;
                 }
                 ServerData.auctionState = false;
                 System.out.println(ServerData.currentRound + "라운드가 종료되었습니다");
@@ -250,6 +253,7 @@ class GameThread extends Thread {
                     if (VictoryCondition.check() != 0) {
                         chatThread = new ChatThread("200/UserChat/Server/축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
                         chatThread.start();
+                        break;
                     }
                 }
 
@@ -258,9 +262,6 @@ class GameThread extends Thread {
                 //new UpdateUserAccount().updateWinnerAccount(); // -- 4번
                 ServerData.currentCard = new DrawRandomCard().randomCard();   //새로운 카드 추가
                 ChatThread cardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
-
-
-
 
                 UserData.currentBidCost = 0;    // 입찰가 초기화
                 UserData.currentBidUser = "noBid";  // 입찰자 초기화
@@ -287,9 +288,6 @@ class GameThread extends Thread {
             if(ServerData.currentRound == 26){
                 ChatThread chatThread = new ChatThread("200/UserChat/Server/아무도 조합을 완성하지 못해서 게임이 무승부로 끝났습니다!");
                 chatThread.start();
-            }
-            else{
-
             }
 
         } catch(InterruptedException e){
