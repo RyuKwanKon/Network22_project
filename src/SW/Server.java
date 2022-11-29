@@ -43,11 +43,14 @@ public class Server {
                 if (userData.count == 4) {
                     System.out.println("접속 불가");
                     continue;
+//                    GameThread gameThread = new GameThread();
+//                    gameThread.start();
                 }
                 ServerThread serverthread = new ServerThread(socket);
                 serverthread.start();
                 socketCount++;
-
+//                if(socketCount == 4){
+//                }
             }
         } catch (IOException e) {
             System.out.println("[Server] User disconnection");
@@ -195,6 +198,9 @@ class ServerThread extends Thread {
             System.out.println("[" + requestUserName + " terminate connection]");
         } catch (IOException e) {
             System.out.println("[Server] User " + splitMessage[1] + " is disconnected");
+            ChatThread chatThread = new ChatThread("300/UserChat/Serve/r" + splitMessage[1]);
+            chatThread.start();
+
             // User disconnected - 유저 정보 삭제해야함
             //e.printStackTrace();
         } catch (InterruptedException e) {
@@ -208,7 +214,9 @@ class GameThread extends Thread {
         System.out.println("GameStart");
 
         try {
-            wait(10);
+//            while(UserData.count < 4){
+//                wait(1);
+//            }
             ServerData.currentCard = new DrawRandomCard().randomCard();
             ChatThread firstCardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
             firstCardInfo.start();
@@ -229,6 +237,7 @@ class GameThread extends Thread {
                 ChatThread chatThread;
                 if(UserData.currentBidUser.equals("noBid")){
                     chatThread = new ChatThread("200/UserChat/Server/아무도 응찰하지 않아 " + ServerData.currentCard + "는 유찰되었습니다!");
+                    new EndRoundMessage().NoneBidding();
                 }else{
                     chatThread = new ChatThread("200/UserChat/Server/" + UserData.currentBidCost + "원을 입찰한 익명의 유저가 낙찰되었습니다!");
                 }

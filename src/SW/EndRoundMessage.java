@@ -15,7 +15,6 @@ public class EndRoundMessage {
                 UserData.userAccount.put(UserData.currentBidUser, money);
             }
         }
-
         for (Map.Entry<String, PrintWriter> entry : UserData.userConnectionList.entrySet()) {
             if (UserData.currentBidUser.equals(entry.getKey())) {
                 entry.getValue().println("200/EndRound/WinBidding/" + entry.getKey() + "/" +
@@ -27,6 +26,14 @@ public class EndRoundMessage {
                         UserData.userAccount.get(entry.getKey()) + "/" + ServerData.currentCard);
                 entry.getValue().flush();
             }
+        }
+    }
+
+    public void NoneBidding(){  // 유찰되었을때
+        for (Map.Entry<String, PrintWriter> entry : UserData.userConnectionList.entrySet()) {
+            entry.getValue().println("200/EndRound/NoneBidding/" + entry.getKey() + "/" +
+                    UserData.currentBidCost + "/" + ServerData.currentCard);
+            entry.getValue().flush();
         }
     }
 }
