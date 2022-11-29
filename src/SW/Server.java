@@ -30,7 +30,7 @@ public class Server {
             while (true) {
                 //4명의 유저를 받는다.
                 System.out.println("[Server] Wait until client come...");
-                if(socketCount == 4){
+                if(socketCount == 4){   // 이거 말고 소켓은 무한대로 받아도 되고 그냥 Userdata.count == 4일떄 게임 쓰레드 시작하게
                     while(UserData.count < 4){
                         wait(1);
                     }
