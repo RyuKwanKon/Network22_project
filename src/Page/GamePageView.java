@@ -1,29 +1,30 @@
 package Page;
 
+import ClientThread.BidThread;
 import Event.*;
 
 import Page.GamePagePanel.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Map;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import Component.*;
 import Page.GamePagePanel.RemainTimer;
 
 import static Event.MainTimer.randNumber;
 import static Event.MainTimer.randTitle;
-import static Frame.Frame.client;
+import static Frame.MainFrame.client;
 import static Page.GamePagePanel.OnChat.input;
 import static Page.GamePagePanel.ScrollChatting.vertical;
 
 public class GamePageView extends JPanel {
     public static JLabel[] card = new JLabel[52];
     public static JLabel[] cardDack = new JLabel[52];
-    public static JLabel CenterCard = new CardView(590, 150, 141, 200, (char) randTitle + String.valueOf(randNumber));
+    public static JLabel CenterCard = new CardView(590, 150, 141, 200, "wait");
     public static JPanel currentChatting = new Chat();
     public static JPanel onChat = new OnChat();
     public static JLabel alarm = new Alarm();
@@ -33,11 +34,11 @@ public class GamePageView extends JPanel {
     public static JLabel coin = new CurrentCoin();
     public static javax.swing.Timer mainTimer = new javax.swing.Timer(5000, new MainTimer());
     public static JLabel timerNum = new RemainTimer(5);;
-    private Thread threadNum;
+    public static JLabel button = new Bid();
     public GamePageView(){
 
-        setFocusable(true);
-        requestFocus();
+//        setFocusable(true);
+//        requestFocus();
         Color background = new Color(255, 255, 255);
         setLayout(null);
         setBorder(null);
@@ -47,7 +48,7 @@ public class GamePageView extends JPanel {
 
         CenterCard.setOpaque(false);
         add(CenterCard);
-        add(new Bid());
+        add(button);
 
         add(Chatting);
         add(onChat);
@@ -76,6 +77,15 @@ public class GamePageView extends JPanel {
         add(new GamePage());
         requestFocus();
         setFocusable(true);
+
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                Thread bidThread = new BidThread(client.getSocket());
+                bidThread.start();
+            }
+        });
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {

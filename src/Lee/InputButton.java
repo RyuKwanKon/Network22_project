@@ -1,11 +1,10 @@
 package Lee;
 
-import ClientThread.ChatThread;
-import ClientThread.ClientConnect;
 import ClientThread.TimerThread;
 import Component.*;
 import GameData.ClientUserData;
 import Page.GamePagePanel.ConnectUser;
+import Frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +12,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static Frame.Frame.*;
+import static Frame.MainFrame.*;
 import static Page.GamePageView.*;
 
 public class InputButton extends JButton{
@@ -34,29 +33,33 @@ public class InputButton extends JButton{
                 try {
                     String userName = Login.loginInput.getText();
                     client.getOutMsg().println("userConnection/" + userName);
-//                    LoginPage.setVisible(false);
-//                    LodingPage.setVisible(true);
-                    System.out.println("hi");
+                    change();
                     String response = client.getInMsg().readLine();
                     String[] splitMessage = response.split("/");
                     System.out.println(response);
                     if(splitMessage[0].equals("200")){
-                        if(splitMessage[1].equals("gameStart"))
-                            LoginPage.setVisible(false);
-                            gamePage.setVisible(true);
-                            gamePage.requestFocus();
-                            for(int i = 0; i <= 3; i++){
+                        if(splitMessage[1].equals("gameStart")) {
+                            MainFrame.LoadingPage.setVisible(false);
+                            MainFrame.gamePage.setVisible(true);
+                            MainFrame.gamePage.requestFocus();
+                            for (int i = 0; i <= 3; i++) {
                                 connectUser.add(new ConnectUser("User: " + splitMessage[5 + i]));
                             }
                             userData.userName = splitMessage[3];
                             coin.setText(splitMessage[4]);
                             Thread timer = new TimerThread(client.getSocket());
                             timer.start();
+                        }
                     }
                 } catch (Exception ex) {
 //                    throw new RuntimeException(ex);
                 }
             }
         });
+    }
+    public void change(){
+        LoginPage.setVisible(false);
+        MainFrame.LoadingPage.setVisible(true);
+//        MainFrame.LoadingPage = new Loding();
     }
 }

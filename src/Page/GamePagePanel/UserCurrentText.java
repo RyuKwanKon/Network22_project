@@ -8,9 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import static Frame.Frame.*;
+import static Frame.MainFrame.*;
 import static Page.GamePagePanel.ScrollChatting.vertical;
-import static Page.GamePageView.currentChatting;
 
 public class UserCurrentText extends JTextField {
     private ClientUserData userData = new ClientUserData();

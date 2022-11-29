@@ -16,10 +16,10 @@ import static Event.MainTimer.randTitle;
 
 
 public class Loding extends JPanel {
-
     public Loding() {
         setBounds(0, 0, 1280, 720);
         setLayout(null);
+        setVisible(true);
         add(new CurrentTitle(610, 210, "대"));
         add(new CurrentTitle(630, 210, "기"));
         add(new CurrentTitle(650, 210, "중"));
@@ -31,7 +31,7 @@ public class Loding extends JPanel {
     class CurrentTitle extends JLabel{
         CurrentTitle(int x, int y, String title){
             setText(title);
-            setBounds(x, y, 600, 400);
+            setBounds(x, y, 50, 50);
             setFont(FontStyle.BidFont);
             setForeground(new Color(154, 254, 132));
         }

@@ -2,13 +2,7 @@ package Lee;
 
 import Page.GamePagePanel.GamePage;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-
-import static Frame.Frame.gamePage;
 
 public class Login extends JPanel {
     public static JTextField loginInput = new InputUser();

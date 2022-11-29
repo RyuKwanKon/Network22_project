@@ -43,14 +43,11 @@ public class Server {
                 if (userData.count == 4) {
                     System.out.println("접속 불가");
                     continue;
-//                    GameThread gameThread = new GameThread();
-//                    gameThread.start();
                 }
                 ServerThread serverthread = new ServerThread(socket);
                 serverthread.start();
                 socketCount++;
-//                if(socketCount == 4){
-//                }
+
             }
         } catch (IOException e) {
             System.out.println("[Server] User disconnection");
@@ -198,9 +195,6 @@ class ServerThread extends Thread {
             System.out.println("[" + requestUserName + " terminate connection]");
         } catch (IOException e) {
             System.out.println("[Server] User " + splitMessage[1] + " is disconnected");
-            ChatThread chatThread = new ChatThread("300/Server/" + splitMessage[1]);
-            chatThread.start();
-            new DeleteUserInfo(splitMessage[1]);
             // User disconnected - 유저 정보 삭제해야함
             //e.printStackTrace();
         } catch (InterruptedException e) {
@@ -208,6 +202,8 @@ class ServerThread extends Thread {
         }
     }
 }
+
+
 
 class GameThread extends Thread {
     public synchronized void run() {
@@ -217,52 +213,51 @@ class GameThread extends Thread {
 //            while(UserData.count < 4){
 //                wait(1);
 //            }
-            ServerData.currentCard = new DrawRandomCard().randomCard();
-            ChatThread firstCardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
-            firstCardInfo.start();
-           // wait(10);
+//            ServerData.currentCard = new DrawRandomCard().randomCard();
+//            ChatThread firstCardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
+//            firstCardInfo.start();
+            // wait(10);
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
             service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);  // 무조건 1초마다 남은시간 출력
 
             while (ServerData.currentRound <= 25) {
-                while(ServerData.auctionRemainTime > -1){
+                while (ServerData.auctionRemainTime > -1) {
                     wait(1);
                 }
-                if(ServerData.currentRound == 0){
-                    ServerData.currentRound++;
-                    continue;
-                }
                 ServerData.auctionState = false;
-                System.out.println(ServerData.currentRound + "라운드가 종료되었습니다");
-                ChatThread EndRound = new ChatThread("200/UserChat/Server/" + ServerData.currentRound + "라운드가 종료되었습니다!");
-                EndRound.start();
-                wait(1000);
-                ChatThread chatThread;
-                if(UserData.currentBidUser.equals("noBid")){
-                    chatThread = new ChatThread("200/UserChat/Server/아무도 응찰하지 않아 " + ServerData.currentCard + "는 유찰되었습니다!");
-                    new EndRoundMessage().NoneBidding();
-                }else{
-                    chatThread = new ChatThread("200/UserChat/Server/" + UserData.currentBidCost + "원을 입찰한 익명의 유저가 낙찰되었습니다!");
-                }
-                chatThread.start();
+                if (ServerData.currentRound != 0) {
+                    System.out.println(ServerData.currentRound + "라운드가 종료되었습니다");
 
-
-                ServerData.usedCardList.add(ServerData.currentCard); // -- 3번
-                new AddCard(); // -- 1번
-                if(UserData.currentBidCost != 0) { //승리 조건 체크해서 승리자 있으면 승리메세지 출력, 스레드 종료
-                    if (VictoryCondition.check() != 0) {
-                        chatThread = new ChatThread("200/UserChat/Server/축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
+                    ChatThread EndRound = new ChatThread("200/UserChat/Server/" + ServerData.currentRound + "라운드가 종료되었습니다!");
+                    EndRound.start();
+                    wait(1000);
+                    ChatThread chatThread;
+                    if (UserData.currentBidUser.equals("noBid")) {
+                        // chatThread = new ChatThread("200/UserChat/Server/아무도 응찰하지 않아 " + ServerData.currentCard + "는 유찰되었습니다!");
+                        new NoneBidding();
+                    } else {
+                        chatThread = new ChatThread("200/UserChat/Server/" + UserData.currentBidCost + "원을 입찰한 익명의 유저가 낙찰되었습니다!");
                         chatThread.start();
-                        break;
+                        new EndRoundMessage(); // -- 2번
                     }
-                }
+                    ServerData.usedCardList.add(ServerData.currentCard); // -- 3번
+                    new AddCard(); // -- 1번
+                    if (UserData.currentBidCost != 0) { //승리 조건 체크해서 승리자 있으면 승리메세지 출력, 스레드 종료
+                        if (VictoryCondition.check() != 0) {
+                            chatThread = new ChatThread("200/UserChat/Server/축하합니다! " + UserData.currentBidUser + "님이 승리하였습니다!");
+                            chatThread.start();
+                            break;
+                        }
+                    }
 
-                new EndRoundMessage(); // -- 2번
+                    new UpdateUserAccount().giveUserIncome();
+                }
                 //UpdateUserAccount 에서 에러발생함 - 한번 낙찰받으면 다음에 낙찰이 안됨
                 //new UpdateUserAccount().updateWinnerAccount(); // -- 4번
                 ServerData.currentCard = new DrawRandomCard().randomCard();   //새로운 카드 추가
                 ChatThread cardInfo = new ChatThread("200/CurrentCard/" + ServerData.currentCard);
 
+                ServerData.currentRound++;  // 라운드 증가
                 UserData.currentBidCost = 0;    // 입찰가 초기화
                 UserData.currentBidUser = "noBid";  // 입찰자 초기화
                 ServerData.auctionRemainTime = 5;   // 경매 카운트다운 초기화
@@ -278,23 +273,18 @@ class GameThread extends Thread {
                 // 8 -- 라운드 마다 지급하는 돈 주기 O
                 cardInfo.start();   // 카드 뿌려줌
 
-
-
                 // -- 8번인데 클라이언트에서 다음 라운드 카드 받을때 자체적으로 금액 증가하므로 서버의 클라 금액만 증가
-                new UpdateUserAccount().giveUserIncome();
                 wait(1000);
-
             }
-            if(ServerData.currentRound == 26){
+            if (ServerData.currentRound == 26) {
                 ChatThread chatThread = new ChatThread("200/UserChat/Server/아무도 조합을 완성하지 못해서 게임이 무승부로 끝났습니다!");
                 chatThread.start();
             }
 
-        } catch(InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
-
-   // public void Message
 }
+
+// public void Message// public void Message

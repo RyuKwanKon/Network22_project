@@ -1,11 +1,11 @@
-import Frame.Frame;
+import Frame.MainFrame;
 
 import javax.swing.*;
 
 public class Main {
-    public static JFrame main = new Frame();
+    public static JFrame main = new MainFrame();
     public static void main(String[] args) {
-//        JFrame main = new Frame();
+
         main.setVisible(true);
     }
 }
