@@ -1,5 +1,6 @@
 package ClientThread;
 
+import Lee.NotEntry;
 import Page.GamePagePanel.ConnectUser;
 import Page.GamePagePanel.UserChat;
 
@@ -13,6 +14,7 @@ import static Component.Data.cardInfo;
 import static GameData.ClientUserData.changeCard;
 import static GameData.ClientUserData.currentCard;
 import static GameData.UserData.*;
+import static Lee.Login.loginButton;
 import static Page.GamePagePanel.ScrollChatting.vertical;
 import static Page.GamePageView.*;
 
@@ -76,6 +78,18 @@ public class TimerThread extends Thread{
                 }else if(splitMessage[0].equals("300")){
                     if(splitMessage[1].equals("Disconnect")){
                         disconnect(splitMessage[2]);
+                    }
+                }else if(splitMessage[0].equals("400")){
+                    if(splitMessage[1].equals("NoEntry")){
+                        LoadingPage.setVisible(false);
+                        loginButton.setText("...게임중...");
+                        loginButton.setEnabled(false);
+                        LoginPage.setVisible(true);
+                    }
+                    else if(splitMessage[1].equals("Entry")){
+                        LoginPage.setVisible(false);
+                        LoadingPage.setVisible(true);
+                        break;
                     }
                 }
             }

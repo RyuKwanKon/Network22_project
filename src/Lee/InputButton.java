@@ -36,12 +36,7 @@ public class InputButton extends JButton{
                     change();
                     Thread timer = new TimerThread(client);
                     timer.start();
-//                    String response = client.getInMsg().readLine();
-//                    String[] splitMessage = response.split("/");
-//                    System.out.println(response);
-//                    if(splitMessage[0].equals("200")){
-//
-//                    }
+
                 } catch (Exception ex) {
 //                    throw new RuntimeException(ex);
                 }
