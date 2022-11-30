@@ -27,6 +27,12 @@ public class Server {
             while (true) {
                 //4명의 유저를 받는다.
                 System.out.println("[Server] Wait until client come...");
+
+                socket = serverSocket.accept();
+                System.out.println("[server] New client connected");
+                ServerThread serverthread = new ServerThread(socket);
+                serverthread.start();
+                UserData.socketCount++;
                 if(UserData.socketCount == 4){   // 이거 말고 소켓은 무한대로 받아도 되고 그냥 Userdata.count == 4일떄 게임 쓰레드 시작하게
                     while(UserData.count < 4){
                         wait(1);
@@ -35,15 +41,7 @@ public class Server {
                     GameThread gameThread = new GameThread();
                     gameThread.start();
                 }
-                socket = serverSocket.accept();
-                System.out.println("[server] New client connected");
-                if (userData.count == 4) {
-                    System.out.println("접속 불가");
-                    continue;
-                }
-                ServerThread serverthread = new ServerThread(socket);
-                serverthread.start();
-                UserData.socketCount++;
+
             }
         } catch (IOException e) {
             System.out.println("[Server] User disconnection");
@@ -90,6 +88,11 @@ class ServerThread extends Thread {
         String requestUserName = "";
         String requestMessage = "";
         try {
+            if(UserData.count > 3){
+                outToClient.println("400/NoEntry");
+                outToClient.flush();
+                return;
+            }
             //client의 요청을 기다림
             while (inFromClient != null) {
                 requestMessage = inFromClient.readLine();
