@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Server {
     private UserData userData;
+
     public static void main(String[] args) {
         Server server = new Server();
         server.start();
@@ -22,37 +23,21 @@ public class Server {
         Socket socket = null;
         try {
             serverSocket = new ServerSocket(1111);
-            ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-            service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);
             Thread gameManage = new GameManage();
             gameManage.start();
             while (true) {
-                //4명의 유저를 받는다.
                 System.out.println("[Server] Wait until client come...");
-
                 socket = serverSocket.accept();
                 System.out.println("[server] New client connected");
                 ServerThread serverthread = new ServerThread(socket);
                 serverthread.start();
-//                UserData.socketCount++;
-//                if(UserData.socketCount == 4){   // 이거 말고 소켓은 무한대로 받아도 되고 그냥 Userdata.count == 4일떄 게임 쓰레드 시작하게
-//                    while(UserData.count < 4){
-//                        wait(1);
-//                    }
-//                    ServerData.auctionRemainTime = 5;
-//                    GameThread gameThread = new GameThread();
-//                    gameThread.start();
-//                }
-
             }
         } catch (IOException e) {
             System.out.println("[Server] User disconnection");
-            //e.printStackTrace();
-        }  finally {
+        } finally {
             if (serverSocket != null) {
                 try {
                     serverSocket.close();
-//                    service.shutdown();
                     System.out.println("[Server] Server closed");
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -70,6 +55,7 @@ class ServerThread extends Thread {
     BufferedReader inFromClient = null;
     PrintWriter outToClient = null;
     String[] splitMessage = null;
+
     public ServerThread(Socket socket) {
         this.serverData = new ServerData();
         this.userData = new UserData();
@@ -88,18 +74,9 @@ class ServerThread extends Thread {
         String requestUserName = "";
         String requestMessage = "";
         try {
-//            if(userData.count > 3){
-//                outToClient.println("400/NoEntry");
-//                outToClient.flush();
-//                while (userData.count != 0) {
-//                    wait(1);
-//                }
-//                outToClient.println("400/Entry");
-//                outToClient.flush();
-//            }
-            //client의 요청을 기다림
             while (inFromClient != null) {
                 requestMessage = inFromClient.readLine();
+
                 System.out.println(requestMessage);
                 splitMessage = requestMessage.split("/");
                 requestUserName = splitMessage[1];
@@ -107,30 +84,26 @@ class ServerThread extends Thread {
                 if (splitMessage[0].equals("end")) return;
                 switch (splitMessage[0]) {
                     case "userConnection": {
-                        if(serverData.startGame){
+                        if (serverData.startGame) {
                             outToClient.println("400/NoEntry");
                             outToClient.flush();
-                            while(serverData.startGame){
-                                wait(1);
-                            }
+                            while (serverData.startGame) wait(1);
                             outToClient.println("400/Entry");
                             outToClient.flush();
                             wait(50);
                         }
-                        userData.userConnectionList.put(splitMessage[1], outToClient);
+                        UserData.userConnectionList.put(splitMessage[1], outToClient);
                         userData.userAccount.put(splitMessage[1], 100);
                         userData.nameList.add(splitMessage[1]);
                         userData.userDeckList.put(splitMessage[1], "");
                         userData.count++;
                         serverData.isStart = true;
-//                        System.out.println(userData.userConnectionList);
-                        while (userData.count < 4) {
-                            wait(1);
-                        }
+
+                        while (userData.count < 4) wait(1);
+
                         String userNameList = "";
-                        for (String e : userData.nameList) {
-                            userNameList = userNameList.concat("/" + e);
-                        }
+                        for (String e : userData.nameList) userNameList = userNameList.concat("/" + e);
+
                         wait(50);
                         outToClient.println("200/gameStart/Server/" + splitMessage[1] + "/100" + userNameList);
                         outToClient.flush();
@@ -138,15 +111,13 @@ class ServerThread extends Thread {
                     break;
                     case "UserChat": {
                         String message = splitMessage[1] + ": ";
-                        for (int i = 2; i < splitMessage.length; i++) {
-                            message += splitMessage[i];
-                        }
+                        for (int i = 2; i < splitMessage.length; i++) message += splitMessage[i];
                         ChatThread chatThread = new ChatThread("200/UserChat/Chat/" + message);
                         chatThread.start();
+                        break;
                     }
-                    break;
                     case "RegisterBid": {
-                        if(ServerData.auctionState == false) break;
+                        if (ServerData.auctionState == false) break;
                         userData.registerBid(splitMessage[1]);
                         serverData.auctionRemainTime = 5;
                         break;
@@ -160,18 +131,19 @@ class ServerThread extends Thread {
                 }
             }
             System.out.println("[" + requestUserName + " terminate connection]");
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             disconnect(splitMessage[1]);
-            if(userData.nameList.size() == 1) endProgram(userData.nameList.get(0));
+            if (userData.nameList.size() == 1) endProgram(userData.nameList.get(0));
         } catch (IOException e) {
             disconnect(splitMessage[1]);
-            if(userData.nameList.size() == 1) endProgram(userData.nameList.get(0));
+            if (userData.nameList.size() == 1) endProgram(userData.nameList.get(0));
         } catch (InterruptedException e) {
             e.printStackTrace();
             System.out.println("error1");
         }
     }
-    synchronized public void disconnect(String name){
+
+    synchronized public void disconnect(String name) {
         System.out.println("[Server] User " + name + " is disconnected");
         DeleteUserInfo.deleteUserInfo(name);
         ChatThread chatThread = new ChatThread("200/userChat/\"" + name + "\"님이 탈주하셨습니다.");
@@ -179,8 +151,9 @@ class ServerThread extends Thread {
         chatThread = new ChatThread("300/Disconnect/" + name);
         chatThread.start();
     }
-    synchronized public void endProgram(String name){
-        ChatThread chatThread = new ChatThread("200/UserChat/Server/\""+name+"\"님이 승리하셨습니다.");
+
+    synchronized public void endProgram(String name) {
+        ChatThread chatThread = new ChatThread("200/UserChat/Server/\"" + name + "\"님이 승리하셨습니다.");
         chatThread.start();
         chatThread = new ChatThread("200/UserChat/Server/Finish");
         chatThread.start();
@@ -188,9 +161,9 @@ class ServerThread extends Thread {
 }
 
 
-
 class GameThread extends Thread {
     private ServerData serverData = new ServerData();
+
     public synchronized void run() {
         System.out.println("GameStart");
         try {

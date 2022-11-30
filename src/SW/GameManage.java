@@ -13,20 +13,23 @@ public class GameManage extends Thread{
     }
     @Override
     synchronized public void run(){
+        //manage timer
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+        service.scheduleAtFixedRate(new ServerTime(), 0, 1, TimeUnit.SECONDS);
         while (true){
             try {
+                //start GameThread
                 wait(500);
+                if(UserData.count == 4 && ServerData.isStart){
+                    serverData.isStart = false;
+                    serverData.startGame = true;
+                    ServerData.auctionRemainTime = 5;
+                    System.out.println(ServerData.auctionRemainTime);
+                    GameThread gameThread = new GameThread();
+                    gameThread.start();
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
-            }
-//            System.out.println(ServerData.isStart);
-            if(UserData.count == 4 && ServerData.isStart){
-                serverData.isStart = false;
-                serverData.startGame = true;
-                ServerData.auctionRemainTime = 5;
-                System.out.println(ServerData.auctionRemainTime);
-                GameThread gameThread = new GameThread();
-                gameThread.start();
             }
         }
     }

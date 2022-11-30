@@ -26,6 +26,15 @@ public class TimerThread extends Thread{
         this.connect = connect;
         this.userData = new ClientUserData();
     }
+    //200/UserChat/Chat/
+    //200/UserChat/Server/
+    //알람
+    //200/RegisterBid/userName/price
+    //새로운 카드
+    //200/currentCard/카드종류
+    //낙찰 받은 유저 200/EndRound/WinBidding/userName/currentCoin/카드
+    //유찰 받은 유저 또는 경매에 응시 안했을 경우 200/EndRound/NoBidding/currentCoin/카드
+    //실패 했을 경우 200/EndRound/NoneBidding/userName/currentCoin/카드
     @Override
     public void run() {
         try {
@@ -39,9 +48,6 @@ public class TimerThread extends Thread{
                 System.out.println(response);
                 String[] splitMessage = response.split("/");
                 if (splitMessage[0].equals("200")) {
-                    if (splitMessage[1].equals("Timer")) {
-                        timer(splitMessage[2]);
-                    }
                     if(splitMessage[1].equals("gameStart")) {
                         LoadingPage.setVisible(false);
                         gamePage.setVisible(true);
@@ -54,32 +60,27 @@ public class TimerThread extends Thread{
                         userData.coin = 100;
                         coin.setText(splitMessage[4]);
                     }
-                    //200/UserChat/Chat/
-                    //200/UserChat/Server/
-                    else if(splitMessage[1].equals("UserChat")){
-                        userChat(splitMessage[2], splitMessage[3]);
-                    }
-                    //알람
+                    //200/Timer/currentTime
+                    //200/UserChat/Chat/Content
+                    //200/UserChat/Server/GameContent
                     //200/RegisterBid/userName/price
-                    else if(splitMessage[1].equals("RegisterBid")){
-                        registerBid(splitMessage[3]);
-                    }
-                    //새로운 카드
-                    //200/currentCard/카드종류
-                    else if(splitMessage[1].equals("CurrentCard")){
-                        currentCard(splitMessage[2]);
-                    }
-                    //낙찰 받은 유저 200/EndRound/WinBidding/userName/currentCoin/카드
-                    //유찰 받은 유저 또는 경매에 응시 안했을 경우 200/EndRound/NoBidding/currentCoin/카드
-                    //실패 했을 경우 200/EndRound/NoneBidding/userName/currentCoin/카드
-                    else if(splitMessage[1].equals("EndRound")){
-                        endRound(splitMessage[2], splitMessage[4], splitMessage[5]);
-                    }
+                    //200/currentCard/cardType
+                    //200/EndRound/WinBidding/userName/currentCoin/currentCard
+                    //200/EndRound/NoBidding/currentCoin/currentCard
+                    //200/EndRound/NoneBidding/userName/currentCoin/currentCard
+                    if (splitMessage[1].equals("Timer")) timer(splitMessage[2]);
+                    else if(splitMessage[1].equals("UserChat")) userChat(splitMessage[2], splitMessage[3]);
+                    else if(splitMessage[1].equals("RegisterBid"))  registerBid(splitMessage[3]);
+                    else if(splitMessage[1].equals("CurrentCard"))  currentCard(splitMessage[2]);
+                    else if(splitMessage[1].equals("EndRound")) endRound(splitMessage[2], splitMessage[4], splitMessage[5]);
+
                 }else if(splitMessage[0].equals("300")){
-                    if(splitMessage[1].equals("Disconnect")){
+                    //300/Disconnect/UserName
+                    if(splitMessage[1].equals("Disconnect"))
                         disconnect(splitMessage[2]);
-                    }
                 }else if(splitMessage[0].equals("400")){
+                    //400/NoEntry
+                    //400/Entry
                     if(splitMessage[1].equals("NoEntry")){
                         LoadingPage.setVisible(false);
                         loginButton.setText("...게임중...");
@@ -89,7 +90,6 @@ public class TimerThread extends Thread{
                     else if(splitMessage[1].equals("Entry")){
                         LoginPage.setVisible(false);
                         LoadingPage.setVisible(true);
-                        break;
                     }
                 }
             }
@@ -142,7 +142,6 @@ public class TimerThread extends Thread{
             currentDack[(title - 65)*13 + (number - 1)] = 1;
             GamePageView.cardDack[(title - 65)*13 + (number - 1)].setVisible(true);
         }
-        //String current = cardInfo[title- 65] + String.valueOf(number);
         remainCard[(title - 65)*13 + (number - 1)] = 1;
         GamePageView.card[(title - 65)*13 + (number - 1)].setVisible(false);
     }
