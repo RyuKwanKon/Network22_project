@@ -30,6 +30,6 @@ Language - Java
   - Timer Thread
     - Client의 request처리 시간과 게임 카운트 다운을 병렬적으로 실행.
     
-<img width="569" alt="스크린샷 2022-12-16 오후 10 35 11" src="https://user-images.githubusercontent.com/97783148/208109846-3a795315-7b01-4952-967c-de896c8ebacc.png">
+<img margin="50" width="569" alt="스크린샷 2022-12-16 오후 10 35 11" src="https://user-images.githubusercontent.com/97783148/208109846-3a795315-7b01-4952-967c-de896c8ebacc.png">
 
 
