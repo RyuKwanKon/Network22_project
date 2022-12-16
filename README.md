@@ -4,5 +4,7 @@
 
 Language - Java
 
-## Project - Auction pocker game
-### Client
+### Project - Auction pocker game
+#### Client
+
+- 게임 시작과 동시에 서버로부터 요청을 받는 대기 상태의 Thread를 실행시킨다.
