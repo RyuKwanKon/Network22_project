@@ -4,8 +4,8 @@
 
 Language - Java
 
-##Demo
-  
+  <img width="1306" alt="스크린샷 2022-12-16 오후 11 23 35" src="https://user-images.githubusercontent.com/97783148/208119073-9b8e9b02-a6d6-46a0-9a9d-caedb36f46ef.png">
+
 
 ### Project Structure
   #### Client
