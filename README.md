@@ -1,11 +1,11 @@
-# Network22_project
+# Network22_project - Auction pocker game
 
 류관곤 / 이승원 / 이소정 / 백민우
 
 Language - Java
 
 
-### Project - Auction pocker game
+### Project Structure
 #### Client
 
 - GUI - Swing
@@ -34,6 +34,8 @@ Language - Java
   - Timer Thread
     - Client의 request처리 시간과 게임 카운트 다운을 병렬적으로 실행.
     
+    
+    
      <img width="569" alt="스크린샷 2022-12-16 오후 10 35 11" src="https://user-images.githubusercontent.com/97783148/208109846-3a795315-7b01-4952-967c-de896c8ebacc.png">
 
 - Server Syncronization
@@ -50,3 +52,7 @@ Language - Java
     - User Thread에서 wait를 통해 게임이 끝날 때까지 대기.
     - 게임 종료시 대기 상태의 User Thread를 깨워 게임에 참여. 
   
+##Demo
+<img width="735" alt="image" src="https://user-images.githubusercontent.com/97783148/208115789-663bc039-b341-4a16-8e1f-6f01662d5ae8.png">
+
+##Demo
