@@ -16,4 +16,6 @@ Language - Java
 
 #### Server
 
-- ![image](https://user-images.githubusercontent.com/97783148/208109265-8711dd7b-f34e-4582-a982-9c35ee08a6cd.png)
+##### Server Structure
+- <img width="708" alt="스크린샷 2022-12-16 오후 10 32 22" src="https://user-images.githubusercontent.com/97783148/208109405-1051b718-3aae-4344-80ed-a13a436b2a68.png">
+
